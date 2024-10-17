@@ -10,9 +10,9 @@ build:
 	docker build --target build -t $(DOCKER_IMAGE) .
 
 .PHONY: package
-package:
+package: build
 	@echo "+ $@"
-	docker build --target bin -t (DOCKER_IMAGE) .
+	docker build --target bin -t $(DOCKER_IMAGE) .
 
 .PHONY: run
 run: package
