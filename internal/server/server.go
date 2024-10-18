@@ -29,7 +29,7 @@ func (s *Server) Run() {
 	go func() {
 		slog.Info("starting server...")
 		if err := http.ListenAndServe(":8080", nil); err != nil {
-			slog.Error("server error: ", err)
+			slog.Error("server error: ", slog.Any("error", err))
 			os.Exit(1)
 		}
 	}()
