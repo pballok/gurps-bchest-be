@@ -1,0 +1,16 @@
+type Character {
+  id: ID!
+  name: String!
+}
+
+input CharacterInput {
+  name: String!
+}
+
+type Query {
+  character(characterID: ID!): Character!
+}
+
+type Mutation {
+  createCharacter(input: CharacterInput!): Character!
+}
