@@ -17,4 +17,4 @@ package: build
 .PHONY: run
 run: package
 	@echo "+ $@"
-	docker run --rm -it --name $(APP_NAME) -p 8080:8080 $(DOCKER_IMAGE)
+	docker run --rm --name $(APP_NAME) -p 8080:8080 $(DOCKER_IMAGE)

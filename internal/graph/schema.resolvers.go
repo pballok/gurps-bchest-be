@@ -6,19 +6,24 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/pballok/gurps-bchest-be/internal/graph/model"
 )
 
 // CreateCharacter is the resolver for the createCharacter field.
 func (r *mutationResolver) CreateCharacter(ctx context.Context, input model.CharacterInput) (*model.Character, error) {
-	panic(fmt.Errorf("not implemented: CreateCharacter - createCharacter"))
+	return &model.Character{
+		ID:   "1234",
+		Name: "Test Character",
+	}, nil
 }
 
 // Character is the resolver for the character field.
 func (r *queryResolver) Character(ctx context.Context, characterID string) (*model.Character, error) {
-	panic(fmt.Errorf("not implemented: Character - character"))
+	return &model.Character{
+		ID:   "1234",
+		Name: "Test Character",
+	}, nil
 }
 
 // Mutation returns MutationResolver implementation.

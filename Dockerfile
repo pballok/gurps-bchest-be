@@ -8,3 +8,4 @@ RUN go build -o /dist/ ./cmd/gurps-bchest-be
 
 FROM scratch AS bin
 COPY --from=build /dist/ /
+CMD [ "/gurps-bchest-be" ]
