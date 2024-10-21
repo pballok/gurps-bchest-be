@@ -47,25 +47,31 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Attribute struct {
+		AttributeType func(childComplexity int) int
+		Cost          func(childComplexity int) int
+		Value         func(childComplexity int) int
+	}
+
 	Character struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
+		Attributes func(childComplexity int) int
+		Name       func(childComplexity int) int
 	}
 
 	Mutation struct {
-		CreateCharacter func(childComplexity int, input model.CharacterInput) int
+		ImportCharacter func(childComplexity int, input model.CharacterImport) int
 	}
 
 	Query struct {
-		Character func(childComplexity int, characterID string) int
+		Character func(childComplexity int, name string) int
 	}
 }
 
 type MutationResolver interface {
-	CreateCharacter(ctx context.Context, input model.CharacterInput) (*model.Character, error)
+	ImportCharacter(ctx context.Context, input model.CharacterImport) (*model.Character, error)
 }
 type QueryResolver interface {
-	Character(ctx context.Context, characterID string) (*model.Character, error)
+	Character(ctx context.Context, name string) (*model.Character, error)
 }
 
 type executableSchema struct {
@@ -87,12 +93,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Character.id":
-		if e.complexity.Character.ID == nil {
+	case "Attribute.attributeType":
+		if e.complexity.Attribute.AttributeType == nil {
 			break
 		}
 
-		return e.complexity.Character.ID(childComplexity), true
+		return e.complexity.Attribute.AttributeType(childComplexity), true
+
+	case "Attribute.cost":
+		if e.complexity.Attribute.Cost == nil {
+			break
+		}
+
+		return e.complexity.Attribute.Cost(childComplexity), true
+
+	case "Attribute.value":
+		if e.complexity.Attribute.Value == nil {
+			break
+		}
+
+		return e.complexity.Attribute.Value(childComplexity), true
+
+	case "Character.attributes":
+		if e.complexity.Character.Attributes == nil {
+			break
+		}
+
+		return e.complexity.Character.Attributes(childComplexity), true
 
 	case "Character.name":
 		if e.complexity.Character.Name == nil {
@@ -101,17 +128,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Character.Name(childComplexity), true
 
-	case "Mutation.createCharacter":
-		if e.complexity.Mutation.CreateCharacter == nil {
+	case "Mutation.importCharacter":
+		if e.complexity.Mutation.ImportCharacter == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createCharacter_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_importCharacter_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateCharacter(childComplexity, args["input"].(model.CharacterInput)), true
+		return e.complexity.Mutation.ImportCharacter(childComplexity, args["input"].(model.CharacterImport)), true
 
 	case "Query.character":
 		if e.complexity.Query.Character == nil {
@@ -123,7 +150,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Character(childComplexity, args["characterID"].(string)), true
+		return e.complexity.Query.Character(childComplexity, args["name"].(string)), true
 
 	}
 	return 0, false
@@ -133,7 +160,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputCharacterInput,
+		ec.unmarshalInputCharacterImport,
 	)
 	first := true
 
@@ -250,26 +277,26 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Mutation_createCharacter_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_importCharacter_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	arg0, err := ec.field_Mutation_createCharacter_argsInput(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_importCharacter_argsInput(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Mutation_createCharacter_argsInput(
+func (ec *executionContext) field_Mutation_importCharacter_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (model.CharacterInput, error) {
+) (model.CharacterImport, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCharacterInput2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterInput(ctx, tmp)
+		return ec.unmarshalNCharacterImport2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterImport(ctx, tmp)
 	}
 
-	var zeroVal model.CharacterInput
+	var zeroVal model.CharacterImport
 	return zeroVal, nil
 }
 
@@ -299,20 +326,20 @@ func (ec *executionContext) field_Query___type_argsName(
 func (ec *executionContext) field_Query_character_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	arg0, err := ec.field_Query_character_argsCharacterID(ctx, rawArgs)
+	arg0, err := ec.field_Query_character_argsName(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["characterID"] = arg0
+	args["name"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Query_character_argsCharacterID(
+func (ec *executionContext) field_Query_character_argsName(
 	ctx context.Context,
 	rawArgs map[string]interface{},
 ) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("characterID"))
-	if tmp, ok := rawArgs["characterID"]; ok {
-		return ec.unmarshalNID2string(ctx, tmp)
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+	if tmp, ok := rawArgs["name"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
 	var zeroVal string
@@ -373,8 +400,8 @@ func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Character_id(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Character_id(ctx, field)
+func (ec *executionContext) _Attribute_attributeType(ctx context.Context, field graphql.CollectedField, obj *model.Attribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Attribute_attributeType(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -387,7 +414,7 @@ func (ec *executionContext) _Character_id(ctx context.Context, field graphql.Col
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return obj.AttributeType, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -399,19 +426,107 @@ func (ec *executionContext) _Character_id(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(model.AttributeType)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNAttributeType2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐAttributeType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Character_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Attribute_attributeType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Character",
+		Object:     "Attribute",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
+			return nil, errors.New("field of type AttributeType does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Attribute_value(ctx context.Context, field graphql.CollectedField, obj *model.Attribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Attribute_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Attribute_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Attribute",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Attribute_cost(ctx context.Context, field graphql.CollectedField, obj *model.Attribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Attribute_cost(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cost, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Attribute_cost(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Attribute",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -461,8 +576,8 @@ func (ec *executionContext) fieldContext_Character_name(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_createCharacter(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createCharacter(ctx, field)
+func (ec *executionContext) _Character_attributes(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Character_attributes(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -475,7 +590,59 @@ func (ec *executionContext) _Mutation_createCharacter(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateCharacter(rctx, fc.Args["input"].(model.CharacterInput))
+		return obj.Attributes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Attribute)
+	fc.Result = res
+	return ec.marshalNAttribute2ᚕᚖgithubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐAttributeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Character_attributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Character",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "attributeType":
+				return ec.fieldContext_Attribute_attributeType(ctx, field)
+			case "value":
+				return ec.fieldContext_Attribute_value(ctx, field)
+			case "cost":
+				return ec.fieldContext_Attribute_cost(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Attribute", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_importCharacter(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_importCharacter(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ImportCharacter(rctx, fc.Args["input"].(model.CharacterImport))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -492,7 +659,7 @@ func (ec *executionContext) _Mutation_createCharacter(ctx context.Context, field
 	return ec.marshalNCharacter2ᚖgithubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacter(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createCharacter(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_importCharacter(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -500,10 +667,10 @@ func (ec *executionContext) fieldContext_Mutation_createCharacter(ctx context.Co
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Character_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Character_name(ctx, field)
+			case "attributes":
+				return ec.fieldContext_Character_attributes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Character", field.Name)
 		},
@@ -515,7 +682,7 @@ func (ec *executionContext) fieldContext_Mutation_createCharacter(ctx context.Co
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createCharacter_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_importCharacter_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -536,7 +703,7 @@ func (ec *executionContext) _Query_character(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Character(rctx, fc.Args["characterID"].(string))
+		return ec.resolvers.Query().Character(rctx, fc.Args["name"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -561,10 +728,10 @@ func (ec *executionContext) fieldContext_Query_character(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Character_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Character_name(ctx, field)
+			case "attributes":
+				return ec.fieldContext_Character_attributes(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Character", field.Name)
 		},
@@ -2485,27 +2652,27 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputCharacterInput(ctx context.Context, obj interface{}) (model.CharacterInput, error) {
-	var it model.CharacterInput
+func (ec *executionContext) unmarshalInputCharacterImport(ctx context.Context, obj interface{}) (model.CharacterImport, error) {
+	var it model.CharacterImport
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name"}
+	fieldsInOrder := [...]string{"data"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "name":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+		case "data":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Name = data
+			it.Data = data
 		}
 	}
 
@@ -2520,6 +2687,55 @@ func (ec *executionContext) unmarshalInputCharacterInput(ctx context.Context, ob
 
 // region    **************************** object.gotpl ****************************
 
+var attributeImplementors = []string{"Attribute"}
+
+func (ec *executionContext) _Attribute(ctx context.Context, sel ast.SelectionSet, obj *model.Attribute) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, attributeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Attribute")
+		case "attributeType":
+			out.Values[i] = ec._Attribute_attributeType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "value":
+			out.Values[i] = ec._Attribute_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "cost":
+			out.Values[i] = ec._Attribute_cost(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var characterImplementors = []string{"Character"}
 
 func (ec *executionContext) _Character(ctx context.Context, sel ast.SelectionSet, obj *model.Character) graphql.Marshaler {
@@ -2531,13 +2747,13 @@ func (ec *executionContext) _Character(ctx context.Context, sel ast.SelectionSet
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Character")
-		case "id":
-			out.Values[i] = ec._Character_id(ctx, field, obj)
+		case "name":
+			out.Values[i] = ec._Character_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "name":
-			out.Values[i] = ec._Character_name(ctx, field, obj)
+		case "attributes":
+			out.Values[i] = ec._Character_attributes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -2583,9 +2799,9 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "createCharacter":
+		case "importCharacter":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createCharacter(ctx, field)
+				return ec._Mutation_importCharacter(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -3011,6 +3227,70 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNAttribute2ᚕᚖgithubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐAttributeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Attribute) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNAttribute2ᚖgithubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐAttribute(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNAttribute2ᚖgithubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐAttribute(ctx context.Context, sel ast.SelectionSet, v *model.Attribute) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Attribute(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNAttributeType2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐAttributeType(ctx context.Context, v interface{}) (model.AttributeType, error) {
+	var res model.AttributeType
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAttributeType2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐAttributeType(ctx context.Context, sel ast.SelectionSet, v model.AttributeType) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3040,18 +3320,18 @@ func (ec *executionContext) marshalNCharacter2ᚖgithubᚗcomᚋpballokᚋgurps�
 	return ec._Character(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCharacterInput2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterInput(ctx context.Context, v interface{}) (model.CharacterInput, error) {
-	res, err := ec.unmarshalInputCharacterInput(ctx, v)
+func (ec *executionContext) unmarshalNCharacterImport2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterImport(ctx context.Context, v interface{}) (model.CharacterImport, error) {
+	res, err := ec.unmarshalInputCharacterImport(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalID(v)
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

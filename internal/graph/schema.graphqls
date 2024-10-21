@@ -1,16 +1,35 @@
 type Character {
-  id: ID!
   name: String!
+  attributes: [Attribute!]!
 }
 
-input CharacterInput {
-  name: String!
+enum AttributeType {
+  ST,
+  DX,
+  IQ,
+  HT,
+  HP,
+  WILL,
+  PER,
+  FP,
+  BS,
+  BM,
+}
+
+type Attribute {
+  attributeType: AttributeType!
+  value: Int!
+  cost: Int!
+}
+
+input CharacterImport {
+  data: String!
 }
 
 type Query {
-  character(characterID: ID!): Character!
+  character(name: String!): Character!
 }
 
 type Mutation {
-  createCharacter(input: CharacterInput!): Character!
+  importCharacter(input: CharacterImport!): Character!
 }
