@@ -43,3 +43,11 @@ func TestAttribute_CostCalculation(t *testing.T) {
 
 	assert.Equal(t, 10, attr.Cost())
 }
+
+func TestAttribute_SetCost(t *testing.T) {
+	attr := NewAttribute(func() float64 { return 1.0 }, func() int { return 5 })
+	attr.SetCost(20)
+	assert.Equal(t, 20, attr.Cost())
+	assert.Equal(t, 4.0, attr.Modifier())
+	assert.Equal(t, 5.0, attr.Value())
+}
