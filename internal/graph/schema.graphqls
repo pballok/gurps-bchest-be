@@ -9,9 +9,11 @@ enum AttributeType {
   IQ,
   HT,
   HP,
+  CURR_HP,
   WILL,
   PER,
   FP,
+  CURR_FP,
   BS,
   BM,
 }

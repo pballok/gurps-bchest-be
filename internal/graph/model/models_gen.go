@@ -32,16 +32,18 @@ type Query struct {
 type AttributeType string
 
 const (
-	AttributeTypeSt   AttributeType = "ST"
-	AttributeTypeDx   AttributeType = "DX"
-	AttributeTypeIq   AttributeType = "IQ"
-	AttributeTypeHt   AttributeType = "HT"
-	AttributeTypeHp   AttributeType = "HP"
-	AttributeTypeWill AttributeType = "WILL"
-	AttributeTypePer  AttributeType = "PER"
-	AttributeTypeFp   AttributeType = "FP"
-	AttributeTypeBs   AttributeType = "BS"
-	AttributeTypeBm   AttributeType = "BM"
+	AttributeTypeSt     AttributeType = "ST"
+	AttributeTypeDx     AttributeType = "DX"
+	AttributeTypeIq     AttributeType = "IQ"
+	AttributeTypeHt     AttributeType = "HT"
+	AttributeTypeHp     AttributeType = "HP"
+	AttributeTypeCurrHp AttributeType = "CURR_HP"
+	AttributeTypeWill   AttributeType = "WILL"
+	AttributeTypePer    AttributeType = "PER"
+	AttributeTypeFp     AttributeType = "FP"
+	AttributeTypeCurrFp AttributeType = "CURR_FP"
+	AttributeTypeBs     AttributeType = "BS"
+	AttributeTypeBm     AttributeType = "BM"
 )
 
 var AllAttributeType = []AttributeType{
@@ -50,16 +52,18 @@ var AllAttributeType = []AttributeType{
 	AttributeTypeIq,
 	AttributeTypeHt,
 	AttributeTypeHp,
+	AttributeTypeCurrHp,
 	AttributeTypeWill,
 	AttributeTypePer,
 	AttributeTypeFp,
+	AttributeTypeCurrFp,
 	AttributeTypeBs,
 	AttributeTypeBm,
 }
 
 func (e AttributeType) IsValid() bool {
 	switch e {
-	case AttributeTypeSt, AttributeTypeDx, AttributeTypeIq, AttributeTypeHt, AttributeTypeHp, AttributeTypeWill, AttributeTypePer, AttributeTypeFp, AttributeTypeBs, AttributeTypeBm:
+	case AttributeTypeSt, AttributeTypeDx, AttributeTypeIq, AttributeTypeHt, AttributeTypeHp, AttributeTypeCurrHp, AttributeTypeWill, AttributeTypePer, AttributeTypeFp, AttributeTypeCurrFp, AttributeTypeBs, AttributeTypeBm:
 		return true
 	}
 	return false
