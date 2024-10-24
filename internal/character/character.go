@@ -12,6 +12,7 @@ import (
 type Character interface {
 	Name() string
 	Player() string
+	Campaign() string
 	Points() int
 	Attribute(attributeType model.AttributeType) attribute.Attribute
 }
@@ -19,6 +20,7 @@ type Character interface {
 type character struct {
 	name       string
 	player     string
+	campaign   string
 	points     int
 	attributes map[model.AttributeType]attribute.Attribute
 }
@@ -41,10 +43,11 @@ type characterGCA5Import struct {
 	CurrFP   float64 `json:"FatiguePoints"`
 }
 
-func NewCharacter(name string, player string, points int) Character {
+func NewCharacter(name string, player string, campaign string, points int) Character {
 	c := &character{
 		name:       name,
 		player:     player,
+		campaign:   campaign,
 		points:     points,
 		attributes: make(map[model.AttributeType]attribute.Attribute),
 	}
@@ -103,14 +106,14 @@ func NewCharacter(name string, player string, points int) Character {
 	return c
 }
 
-func ImportGCA5Character(jsonString []byte) (Character, error) {
+func ImportGCA5Character(campaign string, jsonString []byte) (Character, error) {
 	characterData := characterGCA5Import{}
 	err := json.Unmarshal(jsonString, &characterData)
 	if err != nil {
 		return nil, fmt.Errorf("character import error: %w", err)
 	}
 
-	c := NewCharacter(characterData.Name, characterData.Player, int(characterData.Points))
+	c := NewCharacter(characterData.Name, characterData.Player, campaign, int(characterData.Points))
 	c.Attribute(model.AttributeTypeSt).SetCost(int(characterData.STCost))
 	c.Attribute(model.AttributeTypeDx).SetCost(int(characterData.DXCost))
 	c.Attribute(model.AttributeTypeIq).SetCost(int(characterData.IQCost))
@@ -133,6 +136,10 @@ func (c *character) Name() string {
 
 func (c *character) Player() string {
 	return c.player
+}
+
+func (c *character) Campaign() string {
+	return c.campaign
 }
 
 func (c *character) Points() int {

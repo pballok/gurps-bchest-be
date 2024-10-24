@@ -1,5 +1,8 @@
 type Character {
   name: String!
+  player: String!
+  campaign: String!
+  availablePoints: Int!
   attributes: [Attribute!]!
 }
 
@@ -24,7 +27,8 @@ type Attribute {
   cost: Int!
 }
 
-input CharacterImport {
+input CharacterGCA5Import {
+  campaign: String!
   data: String!
 }
 
@@ -33,5 +37,5 @@ type Query {
 }
 
 type Mutation {
-  importCharacter(input: CharacterImport!): Character!
+  importGCA5Character(input: CharacterGCA5Import!): Character!
 }

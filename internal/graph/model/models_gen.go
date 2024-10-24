@@ -15,12 +15,16 @@ type Attribute struct {
 }
 
 type Character struct {
-	Name       string       `json:"name"`
-	Attributes []*Attribute `json:"attributes"`
+	Name            string       `json:"name"`
+	Player          string       `json:"player"`
+	Campaign        string       `json:"campaign"`
+	AvailablePoints int          `json:"availablePoints"`
+	Attributes      []*Attribute `json:"attributes"`
 }
 
-type CharacterImport struct {
-	Data string `json:"data"`
+type CharacterGCA5Import struct {
+	Campaign string `json:"campaign"`
+	Data     string `json:"data"`
 }
 
 type Mutation struct {
