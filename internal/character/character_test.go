@@ -27,10 +27,11 @@ const defaultImportString string = `
 }`
 
 func TestCharacter_Creation(t *testing.T) {
-	c := NewCharacter("Test", "Player", 10)
+	c := NewCharacter("Test", "Player", "Campaign", 10)
 
 	assert.Equal(t, "Test", c.Name())
 	assert.Equal(t, "Player", c.Player())
+	assert.Equal(t, "Campaign", c.Campaign())
 	assert.Equal(t, 10, c.Points())
 
 	assert.Equal(t, 10.0, c.Attribute(model.AttributeTypeSt).Value())
@@ -46,7 +47,7 @@ func TestCharacter_Creation(t *testing.T) {
 }
 
 func TestCharacter_Attribute(t *testing.T) {
-	c := NewCharacter("Test", "Player", 10)
+	c := NewCharacter("Test", "Player", "Campaign", 10)
 
 	c.Attribute(model.AttributeTypeSt).SetModifier(1.0)
 	c.Attribute(model.AttributeTypeDx).SetModifier(-1.0)
@@ -111,7 +112,7 @@ func TestCharacter_Attribute(t *testing.T) {
 }
 
 func TestCharacter_ImportProperties(t *testing.T) {
-	c, err := ImportGCA5Character([]byte(defaultImportString))
+	c, err := ImportGCA5Character("Campaign", []byte(defaultImportString))
 
 	assert.NoError(t, err)
 	assert.Equal(t, "Test", c.Name())
@@ -120,7 +121,7 @@ func TestCharacter_ImportProperties(t *testing.T) {
 }
 
 func TestCharacter_ImportAttributes(t *testing.T) {
-	c, err := ImportGCA5Character([]byte(defaultImportString))
+	c, err := ImportGCA5Character("Campaign", []byte(defaultImportString))
 
 	assert.NoError(t, err)
 

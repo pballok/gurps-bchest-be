@@ -11,9 +11,9 @@ import (
 	"github.com/pballok/gurps-bchest-be/internal/graph/model"
 )
 
-// ImportCharacter is the resolver for the importCharacter field.
-func (r *mutationResolver) ImportCharacter(ctx context.Context, input model.CharacterImport) (*model.Character, error) {
-	panic(fmt.Errorf("not implemented: ImportCharacter - importCharacter"))
+// ImportGCA5Character is the resolver for the importGCA5Character field.
+func (r *mutationResolver) ImportGCA5Character(ctx context.Context, input model.CharacterGCA5Import) (*model.Character, error) {
+	panic(fmt.Errorf("not implemented: ImportGCA5Character - importGCA5Character"))
 }
 
 // Character is the resolver for the character field.

@@ -54,12 +54,15 @@ type ComplexityRoot struct {
 	}
 
 	Character struct {
-		Attributes func(childComplexity int) int
-		Name       func(childComplexity int) int
+		Attributes      func(childComplexity int) int
+		AvailablePoints func(childComplexity int) int
+		Campaign        func(childComplexity int) int
+		Name            func(childComplexity int) int
+		Player          func(childComplexity int) int
 	}
 
 	Mutation struct {
-		ImportCharacter func(childComplexity int, input model.CharacterImport) int
+		ImportGCA5Character func(childComplexity int, input model.CharacterGCA5Import) int
 	}
 
 	Query struct {
@@ -68,7 +71,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	ImportCharacter(ctx context.Context, input model.CharacterImport) (*model.Character, error)
+	ImportGCA5Character(ctx context.Context, input model.CharacterGCA5Import) (*model.Character, error)
 }
 type QueryResolver interface {
 	Character(ctx context.Context, name string) (*model.Character, error)
@@ -121,6 +124,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Character.Attributes(childComplexity), true
 
+	case "Character.availablePoints":
+		if e.complexity.Character.AvailablePoints == nil {
+			break
+		}
+
+		return e.complexity.Character.AvailablePoints(childComplexity), true
+
+	case "Character.campaign":
+		if e.complexity.Character.Campaign == nil {
+			break
+		}
+
+		return e.complexity.Character.Campaign(childComplexity), true
+
 	case "Character.name":
 		if e.complexity.Character.Name == nil {
 			break
@@ -128,17 +145,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Character.Name(childComplexity), true
 
-	case "Mutation.importCharacter":
-		if e.complexity.Mutation.ImportCharacter == nil {
+	case "Character.player":
+		if e.complexity.Character.Player == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_importCharacter_args(context.TODO(), rawArgs)
+		return e.complexity.Character.Player(childComplexity), true
+
+	case "Mutation.importGCA5Character":
+		if e.complexity.Mutation.ImportGCA5Character == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_importGCA5Character_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ImportCharacter(childComplexity, args["input"].(model.CharacterImport)), true
+		return e.complexity.Mutation.ImportGCA5Character(childComplexity, args["input"].(model.CharacterGCA5Import)), true
 
 	case "Query.character":
 		if e.complexity.Query.Character == nil {
@@ -160,7 +184,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputCharacterImport,
+		ec.unmarshalInputCharacterGCA5Import,
 	)
 	first := true
 
@@ -277,26 +301,26 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Mutation_importCharacter_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_importGCA5Character_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	arg0, err := ec.field_Mutation_importCharacter_argsInput(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_importGCA5Character_argsInput(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
 	args["input"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Mutation_importCharacter_argsInput(
+func (ec *executionContext) field_Mutation_importGCA5Character_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (model.CharacterImport, error) {
+) (model.CharacterGCA5Import, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCharacterImport2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterImport(ctx, tmp)
+		return ec.unmarshalNCharacterGCA5Import2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterGCA5Import(ctx, tmp)
 	}
 
-	var zeroVal model.CharacterImport
+	var zeroVal model.CharacterGCA5Import
 	return zeroVal, nil
 }
 
@@ -576,6 +600,138 @@ func (ec *executionContext) fieldContext_Character_name(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Character_player(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Character_player(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Player, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Character_player(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Character",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Character_campaign(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Character_campaign(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Campaign, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Character_campaign(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Character",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Character_availablePoints(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Character_availablePoints(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailablePoints, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Character_availablePoints(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Character",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Character_attributes(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Character_attributes(ctx, field)
 	if err != nil {
@@ -628,8 +784,8 @@ func (ec *executionContext) fieldContext_Character_attributes(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_importCharacter(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_importCharacter(ctx, field)
+func (ec *executionContext) _Mutation_importGCA5Character(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_importGCA5Character(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -642,7 +798,7 @@ func (ec *executionContext) _Mutation_importCharacter(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ImportCharacter(rctx, fc.Args["input"].(model.CharacterImport))
+		return ec.resolvers.Mutation().ImportGCA5Character(rctx, fc.Args["input"].(model.CharacterGCA5Import))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -659,7 +815,7 @@ func (ec *executionContext) _Mutation_importCharacter(ctx context.Context, field
 	return ec.marshalNCharacter2ᚖgithubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacter(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_importCharacter(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_importGCA5Character(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -669,6 +825,12 @@ func (ec *executionContext) fieldContext_Mutation_importCharacter(ctx context.Co
 			switch field.Name {
 			case "name":
 				return ec.fieldContext_Character_name(ctx, field)
+			case "player":
+				return ec.fieldContext_Character_player(ctx, field)
+			case "campaign":
+				return ec.fieldContext_Character_campaign(ctx, field)
+			case "availablePoints":
+				return ec.fieldContext_Character_availablePoints(ctx, field)
 			case "attributes":
 				return ec.fieldContext_Character_attributes(ctx, field)
 			}
@@ -682,7 +844,7 @@ func (ec *executionContext) fieldContext_Mutation_importCharacter(ctx context.Co
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_importCharacter_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_importGCA5Character_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -730,6 +892,12 @@ func (ec *executionContext) fieldContext_Query_character(ctx context.Context, fi
 			switch field.Name {
 			case "name":
 				return ec.fieldContext_Character_name(ctx, field)
+			case "player":
+				return ec.fieldContext_Character_player(ctx, field)
+			case "campaign":
+				return ec.fieldContext_Character_campaign(ctx, field)
+			case "availablePoints":
+				return ec.fieldContext_Character_availablePoints(ctx, field)
 			case "attributes":
 				return ec.fieldContext_Character_attributes(ctx, field)
 			}
@@ -2652,20 +2820,27 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputCharacterImport(ctx context.Context, obj interface{}) (model.CharacterImport, error) {
-	var it model.CharacterImport
+func (ec *executionContext) unmarshalInputCharacterGCA5Import(ctx context.Context, obj interface{}) (model.CharacterGCA5Import, error) {
+	var it model.CharacterGCA5Import
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"data"}
+	fieldsInOrder := [...]string{"campaign", "data"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "campaign":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("campaign"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Campaign = data
 		case "data":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -2752,6 +2927,21 @@ func (ec *executionContext) _Character(ctx context.Context, sel ast.SelectionSet
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "player":
+			out.Values[i] = ec._Character_player(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "campaign":
+			out.Values[i] = ec._Character_campaign(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "availablePoints":
+			out.Values[i] = ec._Character_availablePoints(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "attributes":
 			out.Values[i] = ec._Character_attributes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -2799,9 +2989,9 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "importCharacter":
+		case "importGCA5Character":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_importCharacter(ctx, field)
+				return ec._Mutation_importGCA5Character(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -3320,8 +3510,8 @@ func (ec *executionContext) marshalNCharacter2ᚖgithubᚗcomᚋpballokᚋgurps�
 	return ec._Character(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCharacterImport2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterImport(ctx context.Context, v interface{}) (model.CharacterImport, error) {
-	res, err := ec.unmarshalInputCharacterImport(ctx, v)
+func (ec *executionContext) unmarshalNCharacterGCA5Import2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterGCA5Import(ctx context.Context, v interface{}) (model.CharacterGCA5Import, error) {
+	res, err := ec.unmarshalInputCharacterGCA5Import(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
