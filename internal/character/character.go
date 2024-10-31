@@ -10,6 +10,7 @@ import (
 )
 
 type Character interface {
+	ToModel() model.Character
 	Name() string
 	Player() string
 	Campaign() string
@@ -128,6 +129,27 @@ func ImportGCA5Character(campaign string, jsonString []byte) (Character, error) 
 	c.Attribute(model.AttributeTypeCurrFp).SetModifier(characterData.CurrFP - c.Attribute(model.AttributeTypeFp).Value())
 
 	return c, nil
+}
+
+func (c *character) ToModel() model.Character {
+	modelChar := model.Character{
+		Name:            c.name,
+		Player:          c.player,
+		Campaign:        c.campaign,
+		AvailablePoints: c.points,
+	}
+
+	var attributes []*model.Attribute
+	for _, attributeType := range model.AllAttributeType {
+		attributes = append(attributes, &model.Attribute{
+			AttributeType: attributeType,
+			Value:         c.Attribute(attributeType).Value(),
+			Cost:          c.Attribute(attributeType).Cost(),
+		})
+	}
+	modelChar.Attributes = attributes
+
+	return modelChar
 }
 
 func (c *character) Name() string {

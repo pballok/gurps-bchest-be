@@ -1,6 +1,8 @@
 package attribute
 
-import "math"
+import (
+	"math"
+)
 
 type Attribute interface {
 	Modifier() float64

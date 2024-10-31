@@ -7,7 +7,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	graph2 "github.com/pballok/gurps-bchest-be/internal/graph"
+	"github.com/pballok/gurps-bchest-be/internal/graph"
+	"github.com/pballok/gurps-bchest-be/internal/storage_mem"
 )
 
 type Server struct {
@@ -15,7 +16,9 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	srv := handler.NewDefaultServer(graph2.NewExecutableSchema(graph2.Config{Resolvers: &graph2.Resolver{}}))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		Storage: storage_mem.NewStorage(),
+	}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/playground"))
 	http.Handle("/query", srv)

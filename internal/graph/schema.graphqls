@@ -1,4 +1,5 @@
 type Character {
+  id: ID!
   name: String!
   player: String!
   campaign: String!
@@ -23,7 +24,7 @@ enum AttributeType {
 
 type Attribute {
   attributeType: AttributeType!
-  value: Int!
+  value: Float!
   cost: Int!
 }
 

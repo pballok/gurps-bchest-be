@@ -6,14 +6,27 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/pballok/gurps-bchest-be/internal/character"
 	"github.com/pballok/gurps-bchest-be/internal/graph/model"
 )
 
 // ImportGCA5Character is the resolver for the importGCA5Character field.
 func (r *mutationResolver) ImportGCA5Character(ctx context.Context, input model.CharacterGCA5Import) (*model.Character, error) {
-	panic(fmt.Errorf("not implemented: ImportGCA5Character - importGCA5Character"))
+	newChar, err := character.ImportGCA5Character(input.Campaign, []byte(input.Data))
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := r.Storage.Characters.Add(newChar)
+	if err != nil {
+		return nil, err
+	}
+
+	modelChar := newChar.ToModel()
+	modelChar.ID = id
+
+	return &modelChar, nil
 }
 
 // Character is the resolver for the character field.

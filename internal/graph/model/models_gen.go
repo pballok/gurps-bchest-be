@@ -10,11 +10,12 @@ import (
 
 type Attribute struct {
 	AttributeType AttributeType `json:"attributeType"`
-	Value         int           `json:"value"`
+	Value         float64       `json:"value"`
 	Cost          int           `json:"cost"`
 }
 
 type Character struct {
+	ID              string       `json:"id"`
 	Name            string       `json:"name"`
 	Player          string       `json:"player"`
 	Campaign        string       `json:"campaign"`
