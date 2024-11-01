@@ -15,10 +15,9 @@ type Attribute struct {
 }
 
 type Character struct {
-	ID              string       `json:"id"`
 	Name            string       `json:"name"`
-	Player          string       `json:"player"`
 	Campaign        string       `json:"campaign"`
+	Player          string       `json:"player"`
 	AvailablePoints int          `json:"availablePoints"`
 	Attributes      []*Attribute `json:"attributes"`
 }

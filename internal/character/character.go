@@ -12,8 +12,8 @@ import (
 type Character interface {
 	ToModel() model.Character
 	Name() string
-	Player() string
 	Campaign() string
+	Player() string
 	Points() int
 	Attribute(attributeType model.AttributeType) attribute.Attribute
 }
@@ -156,12 +156,12 @@ func (c *character) Name() string {
 	return c.name
 }
 
-func (c *character) Player() string {
-	return c.player
-}
-
 func (c *character) Campaign() string {
 	return c.campaign
+}
+
+func (c *character) Player() string {
+	return c.player
 }
 
 func (c *character) Points() int {
@@ -173,5 +173,5 @@ func (c *character) Attribute(attributeType model.AttributeType) attribute.Attri
 		return c.attributes[attributeType]
 	}
 
-	return attribute.NewAttribute(func() float64 { return 0.0 }, func() int { return 0 })
+	return nil
 }

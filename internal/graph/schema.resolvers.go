@@ -18,13 +18,12 @@ func (r *mutationResolver) ImportGCA5Character(ctx context.Context, input model.
 		return nil, err
 	}
 
-	id, err := r.Storage.Characters.Add(newChar)
+	_, err = r.Storage.Characters.Add(newChar)
 	if err != nil {
 		return nil, err
 	}
 
 	modelChar := newChar.ToModel()
-	modelChar.ID = id
 
 	return &modelChar, nil
 }

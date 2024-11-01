@@ -9,8 +9,13 @@ build:
 	@echo "+ $@"
 	docker build --target build -t $(DOCKER_IMAGE) .
 
+.PHONY: test
+test:
+	@echo "+ $@"
+	go test -coverprofile=coverage.out ./internal/...
+
 .PHONY: package
-package: build
+package: test build
 	@echo "+ $@"
 	docker build --target bin -t $(DOCKER_IMAGE) .
 

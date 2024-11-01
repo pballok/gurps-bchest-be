@@ -1,8 +1,7 @@
 type Character {
-  id: ID!
   name: String!
-  player: String!
   campaign: String!
+  player: String!
   availablePoints: Int!
   attributes: [Attribute!]!
 }

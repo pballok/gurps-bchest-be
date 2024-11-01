@@ -8,22 +8,22 @@ import (
 type characterStore struct {
 }
 
-func newCharacterStorage() storage.Storable[character.Character] {
+func newCharacterStorage() storage.Storable[storage.CharacterKeyType, character.Character] {
 	return &characterStore{}
 }
 
-func (*characterStore) Add(character character.Character) (string, error) {
-	return "", nil
+func (*characterStore) Add(chr character.Character) (storage.CharacterKeyType, error) {
+	return storage.CharacterKeyType{}, nil
 }
 
-func (*characterStore) Update(id string, character character.Character) error {
+func (*characterStore) Update(id storage.CharacterKeyType, character character.Character) error {
 	return nil
 }
 
-func (*characterStore) Delete(id string) error {
+func (*characterStore) Delete(id storage.CharacterKeyType) error {
 	return nil
 }
 
-func (*characterStore) Get(id string) (character.Character, error) {
+func (*characterStore) Get(id storage.CharacterKeyType) (character.Character, error) {
 	return character.NewCharacter("Test", "NPC", "Campaign", 100), nil
 }

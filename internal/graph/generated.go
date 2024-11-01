@@ -57,7 +57,6 @@ type ComplexityRoot struct {
 		Attributes      func(childComplexity int) int
 		AvailablePoints func(childComplexity int) int
 		Campaign        func(childComplexity int) int
-		ID              func(childComplexity int) int
 		Name            func(childComplexity int) int
 		Player          func(childComplexity int) int
 	}
@@ -138,13 +137,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Character.Campaign(childComplexity), true
-
-	case "Character.id":
-		if e.complexity.Character.ID == nil {
-			break
-		}
-
-		return e.complexity.Character.ID(childComplexity), true
 
 	case "Character.name":
 		if e.complexity.Character.Name == nil {
@@ -564,50 +556,6 @@ func (ec *executionContext) fieldContext_Attribute_cost(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Character_id(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Character_id(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Character_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Character",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Character_name(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Character_name(ctx, field)
 	if err != nil {
@@ -652,50 +600,6 @@ func (ec *executionContext) fieldContext_Character_name(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Character_player(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Character_player(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Player, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Character_player(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Character",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Character_campaign(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Character_campaign(ctx, field)
 	if err != nil {
@@ -728,6 +632,50 @@ func (ec *executionContext) _Character_campaign(ctx context.Context, field graph
 }
 
 func (ec *executionContext) fieldContext_Character_campaign(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Character",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Character_player(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Character_player(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Player, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Character_player(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Character",
 		Field:      field,
@@ -875,14 +823,12 @@ func (ec *executionContext) fieldContext_Mutation_importGCA5Character(ctx contex
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Character_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Character_name(ctx, field)
-			case "player":
-				return ec.fieldContext_Character_player(ctx, field)
 			case "campaign":
 				return ec.fieldContext_Character_campaign(ctx, field)
+			case "player":
+				return ec.fieldContext_Character_player(ctx, field)
 			case "availablePoints":
 				return ec.fieldContext_Character_availablePoints(ctx, field)
 			case "attributes":
@@ -944,14 +890,12 @@ func (ec *executionContext) fieldContext_Query_character(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Character_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Character_name(ctx, field)
-			case "player":
-				return ec.fieldContext_Character_player(ctx, field)
 			case "campaign":
 				return ec.fieldContext_Character_campaign(ctx, field)
+			case "player":
+				return ec.fieldContext_Character_player(ctx, field)
 			case "availablePoints":
 				return ec.fieldContext_Character_availablePoints(ctx, field)
 			case "attributes":
@@ -2978,23 +2922,18 @@ func (ec *executionContext) _Character(ctx context.Context, sel ast.SelectionSet
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Character")
-		case "id":
-			out.Values[i] = ec._Character_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "name":
 			out.Values[i] = ec._Character_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "player":
-			out.Values[i] = ec._Character_player(ctx, field, obj)
+		case "campaign":
+			out.Values[i] = ec._Character_campaign(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "campaign":
-			out.Values[i] = ec._Character_campaign(ctx, field, obj)
+		case "player":
+			out.Values[i] = ec._Character_player(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -3589,21 +3528,6 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 		}
 	}
 	return graphql.WrapContextMarshaler(ctx, res)
-}
-
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalID(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
