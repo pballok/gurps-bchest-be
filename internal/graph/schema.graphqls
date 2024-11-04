@@ -33,7 +33,8 @@ input CharacterGCA5Import {
 }
 
 type Query {
-  character(name: String!): Character!
+  characters(campaign: String!): [Character!]
+  character(campaign: String!, name: String!): Character!
 }
 
 type Mutation {

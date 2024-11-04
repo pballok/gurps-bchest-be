@@ -2,11 +2,12 @@ package storage
 
 import "github.com/pballok/gurps-bchest-be/internal/character"
 
-type Storable[K comparable, V any] interface {
+type Storable[K comparable, V any, F any] interface {
 	Add(item V) (K, error)
 	Update(id K, item V) error
 	Delete(id K) error
 	Get(id K) (V, error)
+	List(filters F) ([]V, error)
 }
 
 type CharacterKeyType struct {
@@ -14,6 +15,10 @@ type CharacterKeyType struct {
 	Campaign string
 }
 
+type CharacterFilterType struct {
+	Campaign *string
+}
+
 type Storage struct {
-	Characters Storable[CharacterKeyType, character.Character]
+	Characters Storable[CharacterKeyType, character.Character, CharacterFilterType]
 }

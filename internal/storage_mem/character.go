@@ -8,11 +8,13 @@ import (
 )
 
 type characterStore struct {
-	characters map[storage.CharacterKeyType]*character.Character
+	characters map[storage.CharacterKeyType]character.Character
 }
 
-func newCharacterStorage() storage.Storable[storage.CharacterKeyType, character.Character] {
-	return &characterStore{}
+func newCharacterStorage() storage.Storable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType] {
+	return &characterStore{
+		characters: make(map[storage.CharacterKeyType]character.Character),
+	}
 }
 
 func (s *characterStore) Add(chr character.Character) (storage.CharacterKeyType, error) {
@@ -23,10 +25,10 @@ func (s *characterStore) Add(chr character.Character) (storage.CharacterKeyType,
 
 	_, exists := s.characters[id]
 	if exists {
-		return storage.CharacterKeyType{}, fmt.Errorf("conflict error: Character with name %s and campaign %s already exists", chr.Name(), chr.Campaign())
+		return storage.CharacterKeyType{}, fmt.Errorf(`conflict error: Character with name "%s" and campaign "%s" already exists`, chr.Name(), chr.Campaign())
 	}
 
-	s.characters[id] = &chr
+	s.characters[id] = chr
 	return id, nil
 }
 
@@ -38,6 +40,22 @@ func (*characterStore) Delete(id storage.CharacterKeyType) error {
 	return nil
 }
 
-func (*characterStore) Get(id storage.CharacterKeyType) (character.Character, error) {
-	return character.NewCharacter("Test", "NPC", "Campaign", 100), nil
+func (s *characterStore) Get(id storage.CharacterKeyType) (character.Character, error) {
+	c, exists := s.characters[id]
+	if !exists {
+		return nil, fmt.Errorf(`character with campaign "%s", name "%s" not found`, id.Campaign, id.Name)
+	}
+
+	return c, nil
+}
+
+func (s *characterStore) List(filters storage.CharacterFilterType) ([]character.Character, error) {
+	chars := make([]character.Character, 0)
+	for _, c := range s.characters {
+		if filters.Campaign != nil && *(filters.Campaign) == c.Campaign() {
+			chars = append(chars, c)
+		}
+	}
+
+	return chars, nil
 }

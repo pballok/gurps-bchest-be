@@ -15,7 +15,7 @@ test:
 	go test -coverprofile=coverage.out ./internal/...
 
 .PHONY: package
-package: test build
+package: build
 	@echo "+ $@"
 	docker build --target bin -t $(DOCKER_IMAGE) .
 

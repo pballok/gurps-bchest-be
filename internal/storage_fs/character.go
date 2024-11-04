@@ -8,7 +8,7 @@ import (
 type characterStore struct {
 }
 
-func newCharacterStorage() storage.Storable[storage.CharacterKeyType, character.Character] {
+func newCharacterStorage() storage.Storable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType] {
 	return &characterStore{}
 }
 
@@ -26,4 +26,8 @@ func (*characterStore) Delete(id storage.CharacterKeyType) error {
 
 func (*characterStore) Get(id storage.CharacterKeyType) (character.Character, error) {
 	return character.NewCharacter("Test", "NPC", "Campaign", 100), nil
+}
+
+func (*characterStore) List(filters storage.CharacterFilterType) ([]character.Character, error) {
+	return nil, nil
 }

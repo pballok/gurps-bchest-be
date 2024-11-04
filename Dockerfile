@@ -9,4 +9,5 @@ RUN go test -coverprofile=coverage.out ./internal/...
 
 FROM scratch AS bin
 COPY --from=build /dist/ /
+COPY ./import/ /import/
 CMD [ "/gurps-bchest-be" ]

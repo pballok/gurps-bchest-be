@@ -6,9 +6,12 @@ package graph
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 
 	"github.com/pballok/gurps-bchest-be/internal/character"
 	"github.com/pballok/gurps-bchest-be/internal/graph/model"
+	"github.com/pballok/gurps-bchest-be/internal/storage"
 )
 
 // ImportGCA5Character is the resolver for the importGCA5Character field.
@@ -25,14 +28,42 @@ func (r *mutationResolver) ImportGCA5Character(ctx context.Context, input model.
 
 	modelChar := newChar.ToModel()
 
+	slog.Info(fmt.Sprintf(`Imported new GCA5 character "%s" in campaign "%s"`, modelChar.Name, modelChar.Campaign))
+
 	return &modelChar, nil
 }
 
+// Characters is the resolver for the characters field.
+func (r *queryResolver) Characters(ctx context.Context, campaign string) ([]*model.Character, error) {
+	chars, err := r.Storage.Characters.List(storage.CharacterFilterType{Campaign: &campaign})
+	if err != nil {
+		return nil, err
+	}
+
+	modelChars := make([]*model.Character, 0)
+	for _, char := range chars {
+		modelChar := char.ToModel()
+		modelChars = append(modelChars, &modelChar)
+	}
+
+	slog.Info(fmt.Sprintf(`Retrieved %d characters in campaign "%s"`, len(modelChars), campaign))
+	return modelChars, nil
+}
+
 // Character is the resolver for the character field.
-func (r *queryResolver) Character(ctx context.Context, name string) (*model.Character, error) {
-	return &model.Character{
-		Name: "Test Character",
-	}, nil
+func (r *queryResolver) Character(ctx context.Context, campaign string, name string) (*model.Character, error) {
+	c, err := r.Storage.Characters.Get(storage.CharacterKeyType{
+		Campaign: campaign,
+		Name:     name,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	modelChar := c.ToModel()
+	slog.Info(fmt.Sprintf(`Retrieved character "%s" in campaign "%s"`, modelChar.Name, modelChar.Campaign))
+	return &modelChar, nil
 }
 
 // Mutation returns MutationResolver implementation.
