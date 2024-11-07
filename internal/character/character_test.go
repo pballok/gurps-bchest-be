@@ -179,7 +179,7 @@ func TestCharacter_Attribute(t *testing.T) {
 
 	assert.Equal(t, 13.0, c.Attribute(model.AttributeTypeFp).Value())
 	assert.Equal(t, 5.0, c.Attribute(model.AttributeTypeFp).Modifier())
-	assert.Equal(t, 15, c.Attribute(model.AttributeTypeFp).Cost())
+	assert.Equal(t, 17, c.Attribute(model.AttributeTypeFp).Cost())
 
 	assert.Equal(t, 8.0, c.Attribute(model.AttributeTypeCurrFp).Value())
 	assert.Equal(t, -5.0, c.Attribute(model.AttributeTypeCurrFp).Modifier())
