@@ -24,10 +24,12 @@ func (*characterStore) Delete(id storage.CharacterKeyType) error {
 	return nil
 }
 
+func (*characterStore) Count() int { return 0 }
+
 func (*characterStore) Get(id storage.CharacterKeyType) (character.Character, error) {
 	return character.NewCharacter("Test", "NPC", "Campaign", 100), nil
 }
 
-func (*characterStore) List(filters storage.CharacterFilterType) ([]character.Character, error) {
-	return nil, nil
+func (*characterStore) List(filters storage.CharacterFilterType) []character.Character {
+	return nil
 }

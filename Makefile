@@ -4,18 +4,27 @@ DOCKER_IMAGE=$(APP_NAME):$(VERSION)
 
 default: build
 
+-%:
+	-@$(MAKE) $*
+
 .PHONY: build
 build:
 	@echo "+ $@"
 	docker build --target build -t $(DOCKER_IMAGE) .
 
 .PHONY: test
-test:
+test: build
 	@echo "+ $@"
-	go test -coverprofile=coverage.out ./internal/...
+	go test ./internal/... -coverprofile=./cover.out -covermode=count
+	go run github.com/vladopajic/go-test-coverage/v2@latest --config=./.testcoverage.yml
+
+.PHONY: coverage
+coverage: -test
+	@echo "+ $@"
+	go tool cover -html=cover.out -o=cover.html
 
 .PHONY: package
-package: build
+package: test
 	@echo "+ $@"
 	docker build --target bin -t $(DOCKER_IMAGE) .
 

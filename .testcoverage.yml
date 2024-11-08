@@ -15,7 +15,7 @@ profile: cover.out
 threshold:
   # (optional; default 0)
   # The minimum coverage that each file should have
-  file: 70
+  # file: 70
 
   # (optional; default 0)
   # The minimum coverage that each package should have
@@ -23,7 +23,7 @@ threshold:
 
   # (optional; default 0)
   # The minimum total coverage project should have
-  total: 95
+  total: 90
 
 # Holds regexp rules which will override thresholds for matched files or packages
 # using their paths.

@@ -35,10 +35,7 @@ func (r *mutationResolver) ImportGCA5Character(ctx context.Context, input model.
 
 // Characters is the resolver for the characters field.
 func (r *queryResolver) Characters(ctx context.Context, campaign string) ([]*model.Character, error) {
-	chars, err := r.Storage.Characters.List(storage.CharacterFilterType{Campaign: &campaign})
-	if err != nil {
-		return nil, err
-	}
+	chars := r.Storage.Characters.List(storage.CharacterFilterType{Campaign: &campaign})
 
 	modelChars := make([]*model.Character, 0)
 	for _, char := range chars {

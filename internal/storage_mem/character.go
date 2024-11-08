@@ -40,6 +40,10 @@ func (*characterStore) Delete(id storage.CharacterKeyType) error {
 	return nil
 }
 
+func (s *characterStore) Count() int {
+	return len(s.characters)
+}
+
 func (s *characterStore) Get(id storage.CharacterKeyType) (character.Character, error) {
 	c, exists := s.characters[id]
 	if !exists {
@@ -49,7 +53,7 @@ func (s *characterStore) Get(id storage.CharacterKeyType) (character.Character, 
 	return c, nil
 }
 
-func (s *characterStore) List(filters storage.CharacterFilterType) ([]character.Character, error) {
+func (s *characterStore) List(filters storage.CharacterFilterType) []character.Character {
 	chars := make([]character.Character, 0)
 	for _, c := range s.characters {
 		if filters.Campaign != nil && *(filters.Campaign) == c.Campaign() {
@@ -57,5 +61,5 @@ func (s *characterStore) List(filters storage.CharacterFilterType) ([]character.
 		}
 	}
 
-	return chars, nil
+	return chars
 }
