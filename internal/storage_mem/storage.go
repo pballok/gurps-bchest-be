@@ -10,6 +10,18 @@ import (
 	"github.com/pballok/gurps-bchest-be/internal/storage"
 )
 
+type fileSystem interface {
+	ReadDir(string) ([]os.DirEntry, error)
+	ReadFile(string) ([]byte, error)
+}
+
+type osFS struct{}
+
+func (*osFS) ReadDir(path string) ([]os.DirEntry, error) { return os.ReadDir(path) }
+func (*osFS) ReadFile(filename string) ([]byte, error)   { return os.ReadFile(filename) }
+
+var storageFS fileSystem = &osFS{}
+
 func NewStorage() storage.Storage {
 	s := storage.Storage{
 		Characters: newCharacterStorage(),
@@ -25,14 +37,14 @@ func NewStorage() storage.Storage {
 
 func importData(s *storage.Storage) error {
 	const importPath = "./import"
-	dataFiles, err := os.ReadDir(importPath)
+	dataFiles, err := storageFS.ReadDir(importPath)
 	if err != nil {
 		return fmt.Errorf("error while checking for import data files: %w", err)
 	}
 	for _, dataFile := range dataFiles {
 		if !dataFile.IsDir() {
 			if strings.HasPrefix(dataFile.Name(), "character_") {
-				data, err := os.ReadFile(importPath + "/" + dataFile.Name())
+				data, err := storageFS.ReadFile(importPath + "/" + dataFile.Name())
 				if err != nil {
 					return fmt.Errorf(`error reading data file "%s": %w`, dataFile.Name(), err)
 				}

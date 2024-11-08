@@ -42,3 +42,13 @@ clear-graphql:
 graphql: clear-graphql
 	@echo "+ $@"
 	go run github.com/99designs/gqlgen generate
+
+.PHONY: clear-mocks
+clear-mocks:
+	@echo "+ $@"
+	@find . -name "mock_*.go" -type f -delete
+
+.PHONY: mocks
+mocks: clear-mocks
+	@echo "+ $@"
+	docker run -v .:/src -w /src vektra/mockery --all

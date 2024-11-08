@@ -1,0 +1,9 @@
+inpackage: True
+dir: "{{.InterfaceDir}}"
+with-expecter: True
+packages:
+  github.com/pballok/gurps-bchest-be/internal/storage_mem:
+    config:
+    interfaces:
+      fileSystem:
+        config:
