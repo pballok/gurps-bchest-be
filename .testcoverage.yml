@@ -15,7 +15,7 @@ profile: cover.out
 threshold:
   # (optional; default 0)
   # The minimum coverage that each file should have
-  # file: 70
+  file: 70
 
   # (optional; default 0)
   # The minimum coverage that each package should have
@@ -42,6 +42,6 @@ override:
 exclude:
   # Exclude files or packages matching their paths
   paths:
-    - generated.go$
-    - _gen.go$
-    - ^internal/tools
+    - generated\.go$
+    - _gen\.go$
+    - mock_.*\.go$

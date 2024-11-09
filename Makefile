@@ -16,7 +16,7 @@ build:
 test: build
 	@echo "+ $@"
 	go test ./internal/... -coverprofile=./cover.out -covermode=count
-	go run github.com/vladopajic/go-test-coverage/v2@latest --config=./.testcoverage.yml
+	go run github.com/vladopajic/go-test-coverage/v2 --config=./.testcoverage.yml
 
 .PHONY: coverage
 coverage: -test
@@ -46,7 +46,7 @@ graphql: clear-graphql
 .PHONY: clear-mocks
 clear-mocks:
 	@echo "+ $@"
-	@find . -name "mock_*.go" -type f -delete
+	@rm -rf internal/mocks
 
 .PHONY: mocks
 mocks: clear-mocks

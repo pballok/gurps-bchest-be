@@ -8,7 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/pballok/gurps-bchest-be/internal/graph"
-	"github.com/pballok/gurps-bchest-be/internal/storage_mem"
+	"github.com/pballok/gurps-bchest-be/internal/memstorage"
 )
 
 type Server struct {
@@ -17,7 +17,7 @@ type Server struct {
 
 func NewServer() *Server {
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		Storage: storage_mem.NewStorage(),
+		Storage: memstorage.New(),
 	}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/playground"))

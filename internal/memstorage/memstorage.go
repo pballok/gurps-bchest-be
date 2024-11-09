@@ -1,4 +1,4 @@
-package storage_mem
+package memstorage
 
 import (
 	"fmt"
@@ -22,12 +22,12 @@ func (*osFS) ReadFile(filename string) ([]byte, error)   { return os.ReadFile(fi
 
 var storageFS fileSystem = &osFS{}
 
-func NewStorage() storage.Storage {
+func New() storage.Storage {
 	s := storage.Storage{
-		Characters: newCharacterStorage(),
+		Characters: newCharacterStorable(),
 	}
 
-	err := importData(&s)
+	err := importData(&s, "./import")
 	if err != nil {
 		slog.Any("error", err)
 	}
@@ -35,8 +35,7 @@ func NewStorage() storage.Storage {
 	return s
 }
 
-func importData(s *storage.Storage) error {
-	const importPath = "./import"
+func importData(s *storage.Storage, importPath string) error {
 	dataFiles, err := storageFS.ReadDir(importPath)
 	if err != nil {
 		return fmt.Errorf("error while checking for import data files: %w", err)
@@ -44,23 +43,32 @@ func importData(s *storage.Storage) error {
 	for _, dataFile := range dataFiles {
 		if !dataFile.IsDir() {
 			if strings.HasPrefix(dataFile.Name(), "character_") {
-				data, err := storageFS.ReadFile(importPath + "/" + dataFile.Name())
+				char, err := addCharacterFromFile(s, importPath+"/"+dataFile.Name())
 				if err != nil {
-					return fmt.Errorf(`error reading data file "%s": %w`, dataFile.Name(), err)
+					slog.Any("error", err)
+					continue
 				}
-				char, err := character.ImportGCA5Character("Imported Campaign", data)
-				if err != nil {
-					return fmt.Errorf(`error importing character from file "%s": %w`, dataFile.Name(), err)
-				}
-				_, err = s.Characters.Add(char)
-				if err != nil {
-					return fmt.Errorf(`error adding character from file "%s" to storage: %w`, dataFile.Name(), err)
-				}
-
 				slog.Info(fmt.Sprintf(`Imported character "%s" from file "%s"`, char.Name(), dataFile.Name()))
 			}
 		}
 	}
 
 	return nil
+}
+
+func addCharacterFromFile(s *storage.Storage, fileName string) (character.Character, error) {
+	data, err := storageFS.ReadFile(fileName)
+	if err != nil {
+		return nil, fmt.Errorf(`error reading data file "%s": %w`, fileName, err)
+	}
+	char, err := character.ImportGCA5Character("Imported Campaign", data)
+	if err != nil {
+		return nil, fmt.Errorf(`error importing character from file "%s": %w`, fileName, err)
+	}
+	_, err = s.Characters.Add(char)
+	if err != nil {
+		return nil, fmt.Errorf(`error adding character from file "%s" to storage: %w`, fileName, err)
+	}
+
+	return char, nil
 }

@@ -1,4 +1,4 @@
-package storage_mem
+package memstorage
 
 import (
 	"fmt"
@@ -7,17 +7,17 @@ import (
 	"github.com/pballok/gurps-bchest-be/internal/storage"
 )
 
-type characterStore struct {
+type characterStorable struct {
 	characters map[storage.CharacterKeyType]character.Character
 }
 
-func newCharacterStorage() storage.Storable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType] {
-	return &characterStore{
+func newCharacterStorable() storage.Storable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType] {
+	return &characterStorable{
 		characters: make(map[storage.CharacterKeyType]character.Character),
 	}
 }
 
-func (s *characterStore) Add(chr character.Character) (storage.CharacterKeyType, error) {
+func (s *characterStorable) Add(chr character.Character) (storage.CharacterKeyType, error) {
 	id := storage.CharacterKeyType{
 		Name:     chr.Name(),
 		Campaign: chr.Campaign(),
@@ -32,19 +32,19 @@ func (s *characterStore) Add(chr character.Character) (storage.CharacterKeyType,
 	return id, nil
 }
 
-func (*characterStore) Update(id storage.CharacterKeyType, character character.Character) error {
+func (*characterStorable) Update(id storage.CharacterKeyType, character character.Character) error {
 	return nil
 }
 
-func (*characterStore) Delete(id storage.CharacterKeyType) error {
+func (*characterStorable) Delete(id storage.CharacterKeyType) error {
 	return nil
 }
 
-func (s *characterStore) Count() int {
+func (s *characterStorable) Count() int {
 	return len(s.characters)
 }
 
-func (s *characterStore) Get(id storage.CharacterKeyType) (character.Character, error) {
+func (s *characterStorable) Get(id storage.CharacterKeyType) (character.Character, error) {
 	c, exists := s.characters[id]
 	if !exists {
 		return nil, fmt.Errorf(`character with campaign "%s", name "%s" not found`, id.Campaign, id.Name)
@@ -53,7 +53,7 @@ func (s *characterStore) Get(id storage.CharacterKeyType) (character.Character, 
 	return c, nil
 }
 
-func (s *characterStore) List(filters storage.CharacterFilterType) []character.Character {
+func (s *characterStorable) List(filters storage.CharacterFilterType) []character.Character {
 	chars := make([]character.Character, 0)
 	for _, c := range s.characters {
 		if filters.Campaign != nil && *(filters.Campaign) == c.Campaign() {

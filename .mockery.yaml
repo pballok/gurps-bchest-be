@@ -1,8 +1,8 @@
-inpackage: True
-dir: "{{.InterfaceDir}}"
 with-expecter: True
+dir: "internal/mocks/{{.PackageName}}"
+outpkg: "mocks"
 packages:
-  github.com/pballok/gurps-bchest-be/internal/storage_mem:
+  github.com/pballok/gurps-bchest-be/internal/memstorage:
     config:
     interfaces:
       fileSystem:

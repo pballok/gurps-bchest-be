@@ -1,4 +1,4 @@
-package storage_mem
+package memstorage
 
 import (
 	"testing"
@@ -9,14 +9,14 @@ import (
 )
 
 func TestCharacterStore_NewStore(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 
 	assert.NotNil(t, 0, s)
 	assert.Equal(t, 0, s.Count())
 }
 
 func TestCharacterStore_Add_Success(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	id, err := s.Add(c)
 
@@ -27,7 +27,7 @@ func TestCharacterStore_Add_Success(t *testing.T) {
 }
 
 func TestCharacterStore_Add_Fail(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	_, _ = s.Add(c)
 	_, err := s.Add(c) // Add same character again
@@ -36,7 +36,7 @@ func TestCharacterStore_Add_Fail(t *testing.T) {
 }
 
 func TestCharacterStore_Update_Success(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 
 	err := s.Update(storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"}, c)
@@ -45,7 +45,7 @@ func TestCharacterStore_Update_Success(t *testing.T) {
 }
 
 func TestCharacterStore_Delete_Success(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 
 	err := s.Delete(storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"})
 
@@ -53,12 +53,12 @@ func TestCharacterStore_Delete_Success(t *testing.T) {
 }
 
 func TestCharacterStore_Count_EmptyStorage(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 	assert.Equal(t, 0, s.Count())
 }
 
 func TestCharacterStore_Count_StorageWithItems(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 	_, _ = s.Add(character.NewCharacter("Test1", "Player1", "Campaign", 10))
 	_, _ = s.Add(character.NewCharacter("Test2", "Player2", "Campaign", 10))
 	_, _ = s.Add(character.NewCharacter("Test3", "Player3", "Campaign", 10))
@@ -67,7 +67,7 @@ func TestCharacterStore_Count_StorageWithItems(t *testing.T) {
 }
 
 func TestCharacterStore_Get_Success(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	id, _ := s.Add(c)
 	addedChar, err := s.Get(id)
@@ -77,7 +77,7 @@ func TestCharacterStore_Get_Success(t *testing.T) {
 }
 
 func TestCharacterStore_Get_ReturnsWithExpectedItem(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 	_, _ = s.Add(character.NewCharacter("Test1", "Player1", "Campaign", 10))
 	_, _ = s.Add(character.NewCharacter("Test2", "Player2", "Campaign", 20))
 	_, _ = s.Add(character.NewCharacter("Test3", "Player3", "Campaign", 30))
@@ -94,7 +94,7 @@ func TestCharacterStore_Get_ReturnsWithExpectedItem(t *testing.T) {
 }
 
 func TestCharacterStore_Get_Fail(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 	_, _ = s.Add(character.NewCharacter("Test", "Player", "Campaign", 10))
 	_, err := s.Get(storage.CharacterKeyType{Name: "Test1", Campaign: "Campaign"})
 
@@ -102,7 +102,7 @@ func TestCharacterStore_Get_Fail(t *testing.T) {
 }
 
 func TestCharacterStore_List_Success(t *testing.T) {
-	s := newCharacterStorage()
+	s := newCharacterStorable()
 	_, _ = s.Add(character.NewCharacter("Test1", "Player1", "Campaign1", 10))
 	_, _ = s.Add(character.NewCharacter("Test1", "Player1", "Campaign2", 20))
 	_, _ = s.Add(character.NewCharacter("Test3", "Player3", "Campaign1", 30))
