@@ -45,3 +45,4 @@ exclude:
     - generated\.go$
     - _gen\.go$
     - mock_.*\.go$
+    - filesystem\.go$

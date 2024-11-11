@@ -11,7 +11,7 @@ type characterStorable struct {
 	characters map[storage.CharacterKeyType]character.Character
 }
 
-func newCharacterStorable() storage.Storable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType] {
+func NewCharacterStorable() storage.Storable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType] {
 	return &characterStorable{
 		characters: make(map[storage.CharacterKeyType]character.Character),
 	}

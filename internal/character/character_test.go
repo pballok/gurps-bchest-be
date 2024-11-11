@@ -47,14 +47,14 @@ func TestCharacter_Creation(t *testing.T) {
 }
 
 func TestCharacter_ImportFailure(t *testing.T) {
-	c, err := ImportGCA5Character("Campaign", []byte("invalid json"))
+	c, err := FromGCA5Import("Campaign", []byte("invalid json"))
 
 	assert.Error(t, err)
 	assert.Nil(t, c)
 }
 
 func TestCharacter_ImportProperties(t *testing.T) {
-	c, err := ImportGCA5Character("Campaign", []byte(defaultImportString))
+	c, err := FromGCA5Import("Campaign", []byte(defaultImportString))
 
 	assert.NoError(t, err)
 	assert.Equal(t, "Test", c.Name())
@@ -64,7 +64,7 @@ func TestCharacter_ImportProperties(t *testing.T) {
 }
 
 func TestCharacter_ImportAttributes(t *testing.T) {
-	c, err := ImportGCA5Character("Campaign", []byte(defaultImportString))
+	c, err := FromGCA5Import("Campaign", []byte(defaultImportString))
 
 	assert.NoError(t, err)
 
@@ -118,7 +118,7 @@ func TestCharacter_ImportAttributes(t *testing.T) {
 }
 
 func TestCharacter_ToModel(t *testing.T) {
-	c, _ := ImportGCA5Character("Campaign", []byte(defaultImportString))
+	c, _ := FromGCA5Import("Campaign", []byte(defaultImportString))
 	mc := c.ToModel()
 
 	assert.Equal(t, c.Name(), mc.Name)

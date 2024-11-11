@@ -8,15 +8,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCharacterStore_NewStore(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_NewStore(t *testing.T) {
+	s := NewCharacterStorable()
 
 	assert.NotNil(t, 0, s)
 	assert.Equal(t, 0, s.Count())
 }
 
-func TestCharacterStore_Add_Success(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_Add_Success(t *testing.T) {
+	s := NewCharacterStorable()
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	id, err := s.Add(c)
 
@@ -26,8 +26,8 @@ func TestCharacterStore_Add_Success(t *testing.T) {
 	assert.Equal(t, 1, s.Count())
 }
 
-func TestCharacterStore_Add_Fail(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_Add_Fail(t *testing.T) {
+	s := NewCharacterStorable()
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	_, _ = s.Add(c)
 	_, err := s.Add(c) // Add same character again
@@ -35,8 +35,8 @@ func TestCharacterStore_Add_Fail(t *testing.T) {
 	assert.Equal(t, 1, s.Count())
 }
 
-func TestCharacterStore_Update_Success(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_Update_Success(t *testing.T) {
+	s := NewCharacterStorable()
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 
 	err := s.Update(storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"}, c)
@@ -44,21 +44,21 @@ func TestCharacterStore_Update_Success(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestCharacterStore_Delete_Success(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_Delete_Success(t *testing.T) {
+	s := NewCharacterStorable()
 
 	err := s.Delete(storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"})
 
 	assert.Nil(t, err)
 }
 
-func TestCharacterStore_Count_EmptyStorage(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_Count_EmptyStorage(t *testing.T) {
+	s := NewCharacterStorable()
 	assert.Equal(t, 0, s.Count())
 }
 
-func TestCharacterStore_Count_StorageWithItems(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_Count_StorageWithItems(t *testing.T) {
+	s := NewCharacterStorable()
 	_, _ = s.Add(character.NewCharacter("Test1", "Player1", "Campaign", 10))
 	_, _ = s.Add(character.NewCharacter("Test2", "Player2", "Campaign", 10))
 	_, _ = s.Add(character.NewCharacter("Test3", "Player3", "Campaign", 10))
@@ -66,8 +66,8 @@ func TestCharacterStore_Count_StorageWithItems(t *testing.T) {
 	assert.Equal(t, 3, s.Count())
 }
 
-func TestCharacterStore_Get_Success(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_Get_Success(t *testing.T) {
+	s := NewCharacterStorable()
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	id, _ := s.Add(c)
 	addedChar, err := s.Get(id)
@@ -76,8 +76,8 @@ func TestCharacterStore_Get_Success(t *testing.T) {
 	assert.Equal(t, "Test", addedChar.Name())
 }
 
-func TestCharacterStore_Get_ReturnsWithExpectedItem(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_Get_ReturnsWithExpectedItem(t *testing.T) {
+	s := NewCharacterStorable()
 	_, _ = s.Add(character.NewCharacter("Test1", "Player1", "Campaign", 10))
 	_, _ = s.Add(character.NewCharacter("Test2", "Player2", "Campaign", 20))
 	_, _ = s.Add(character.NewCharacter("Test3", "Player3", "Campaign", 30))
@@ -93,16 +93,16 @@ func TestCharacterStore_Get_ReturnsWithExpectedItem(t *testing.T) {
 	assert.Equal(t, 20, addedChar.Points())
 }
 
-func TestCharacterStore_Get_Fail(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_Get_Fail(t *testing.T) {
+	s := NewCharacterStorable()
 	_, _ = s.Add(character.NewCharacter("Test", "Player", "Campaign", 10))
 	_, err := s.Get(storage.CharacterKeyType{Name: "Test1", Campaign: "Campaign"})
 
 	assert.NotNil(t, err)
 }
 
-func TestCharacterStore_List_Success(t *testing.T) {
-	s := newCharacterStorable()
+func TestCharacterStorable_List_Success(t *testing.T) {
+	s := NewCharacterStorable()
 	_, _ = s.Add(character.NewCharacter("Test1", "Player1", "Campaign1", 10))
 	_, _ = s.Add(character.NewCharacter("Test1", "Player1", "Campaign2", 20))
 	_, _ = s.Add(character.NewCharacter("Test3", "Player3", "Campaign1", 30))
