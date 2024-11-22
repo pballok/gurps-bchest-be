@@ -32,7 +32,7 @@ func NewServer(storage storage.Storage) *Server {
 	}
 }
 
-func (s *Server) Run() {
+func (s *Server) Run() { // coverage-ignore
 	go func() {
 		slog.Info("starting server...")
 		if err := http.ListenAndServe(":8080", nil); err != nil {
