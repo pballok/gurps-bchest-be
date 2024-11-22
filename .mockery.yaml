@@ -1,0 +1,15 @@
+#file: noinspection SpellCheckingInspection
+with-expecter: True
+inpackage: True
+dir: "{{.InterfaceDir}}"
+packages:
+  github.com/pballok/gurps-bchest-be/internal/storage:
+    interfaces:
+      fileSystemInterface:
+      Storable:
+      Storage:
+  github.com/pballok/gurps-bchest-be/internal/character:
+    interfaces:
+      Character:
+    types:
+      ImporterFunc:

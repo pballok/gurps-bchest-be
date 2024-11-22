@@ -1,16 +1,42 @@
 type Character {
-  id: ID!
   name: String!
+  campaign: String!
+  player: String!
+  availablePoints: Int!
+  attributes: [Attribute!]!
 }
 
-input CharacterInput {
-  name: String!
+enum AttributeType {
+  ST,
+  DX,
+  IQ,
+  HT,
+  HP,
+  CURR_HP,
+  WILL,
+  PER,
+  FP,
+  CURR_FP,
+  BS,
+  BM,
+}
+
+type Attribute {
+  attributeType: AttributeType!
+  value: Float!
+  cost: Int!
+}
+
+input ImportGCA5CharacterInput {
+  campaign: String!
+  data: String!
 }
 
 type Query {
-  character(characterID: ID!): Character!
+  characters(campaign: String!): [Character!]
+  character(campaign: String!, name: String!): Character!
 }
 
 type Mutation {
-  createCharacter(input: CharacterInput!): Character!
+  importGCA5Character(input: ImportGCA5CharacterInput!): Character!
 }

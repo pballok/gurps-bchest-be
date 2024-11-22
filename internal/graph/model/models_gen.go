@@ -2,17 +2,94 @@
 
 package model
 
-type Character struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
+type Attribute struct {
+	AttributeType AttributeType `json:"attributeType"`
+	Value         float64       `json:"value"`
+	Cost          int           `json:"cost"`
 }
 
-type CharacterInput struct {
-	Name string `json:"name"`
+type Character struct {
+	Name            string       `json:"name"`
+	Campaign        string       `json:"campaign"`
+	Player          string       `json:"player"`
+	AvailablePoints int          `json:"availablePoints"`
+	Attributes      []*Attribute `json:"attributes"`
+}
+
+type ImportGCA5CharacterInput struct {
+	Campaign string `json:"campaign"`
+	Data     string `json:"data"`
 }
 
 type Mutation struct {
 }
 
 type Query struct {
+}
+
+type AttributeType string
+
+const (
+	AttributeTypeSt     AttributeType = "ST"
+	AttributeTypeDx     AttributeType = "DX"
+	AttributeTypeIq     AttributeType = "IQ"
+	AttributeTypeHt     AttributeType = "HT"
+	AttributeTypeHp     AttributeType = "HP"
+	AttributeTypeCurrHp AttributeType = "CURR_HP"
+	AttributeTypeWill   AttributeType = "WILL"
+	AttributeTypePer    AttributeType = "PER"
+	AttributeTypeFp     AttributeType = "FP"
+	AttributeTypeCurrFp AttributeType = "CURR_FP"
+	AttributeTypeBs     AttributeType = "BS"
+	AttributeTypeBm     AttributeType = "BM"
+)
+
+var AllAttributeType = []AttributeType{
+	AttributeTypeSt,
+	AttributeTypeDx,
+	AttributeTypeIq,
+	AttributeTypeHt,
+	AttributeTypeHp,
+	AttributeTypeCurrHp,
+	AttributeTypeWill,
+	AttributeTypePer,
+	AttributeTypeFp,
+	AttributeTypeCurrFp,
+	AttributeTypeBs,
+	AttributeTypeBm,
+}
+
+func (e AttributeType) IsValid() bool {
+	switch e {
+	case AttributeTypeSt, AttributeTypeDx, AttributeTypeIq, AttributeTypeHt, AttributeTypeHp, AttributeTypeCurrHp, AttributeTypeWill, AttributeTypePer, AttributeTypeFp, AttributeTypeCurrFp, AttributeTypeBs, AttributeTypeBm:
+		return true
+	}
+	return false
+}
+
+func (e AttributeType) String() string {
+	return string(e)
+}
+
+func (e *AttributeType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AttributeType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AttributeType", str)
+	}
+	return nil
+}
+
+func (e AttributeType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

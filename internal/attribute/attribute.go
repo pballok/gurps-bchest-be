@@ -1,12 +1,15 @@
 package attribute
 
-import "math"
+import (
+	"math"
+)
 
 type Attribute interface {
 	Modifier() float64
 	SetModifier(float64)
 	Value() float64
 	Cost() int
+	SetCost(int)
 }
 
 type attribute struct {
@@ -37,4 +40,8 @@ func (a *attribute) Value() float64 {
 
 func (a *attribute) Cost() int {
 	return int(math.Ceil(a.modifier * float64(a.costPerModifier())))
+}
+
+func (a *attribute) SetCost(cost int) {
+	a.modifier = float64(cost) / float64(a.costPerModifier())
 }
