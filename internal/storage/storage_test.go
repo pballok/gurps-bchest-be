@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -41,7 +42,7 @@ func TestStorage_ImportData_ImportAllCharacters(t *testing.T) {
 	mockedFS.EXPECT().ReadFile("./import/character_2.json").Once().Return([]byte("{\"CharacterName\": \"Character 2\"}"), nil)
 
 	mockedCharacterStorage := NewMockStorable[CharacterKeyType, character.Character, CharacterFilterType](t)
-	mockedCharacterStorage.EXPECT().Add(mock.Anything).Times(2).Return(CharacterKeyType{}, nil)
+	mockedCharacterStorage.EXPECT().Add(mock.Anything, mock.Anything).Times(2).Return(CharacterKeyType{}, nil)
 
 	storageFS = mockedFS
 	s := NewStorage(mockedCharacterStorage)
@@ -86,7 +87,7 @@ func TestStorage_ImportData_ImportFileOpenError(t *testing.T) {
 	mockedFS.EXPECT().ReadFile("./import/character_2.json").Once().Return([]byte("{\"CharacterName\": \"Character 2\"}"), nil)
 
 	mockedCharacterStorage := NewMockStorable[CharacterKeyType, character.Character, CharacterFilterType](t)
-	mockedCharacterStorage.EXPECT().Add(mock.Anything).Once().Return(CharacterKeyType{}, nil)
+	mockedCharacterStorage.EXPECT().Add(mock.Anything, mock.Anything).Once().Return(CharacterKeyType{}, nil)
 
 	storageFS = mockedFS
 	s := NewStorage(mockedCharacterStorage)
@@ -103,7 +104,7 @@ func TestStorage_ImportData_InvalidData(t *testing.T) {
 	mockedFS.EXPECT().ReadFile("./import/character_2.json").Once().Return([]byte("{\"CharacterName\": \"Character 2\"}"), nil)
 
 	mockedCharacterStorage := NewMockStorable[CharacterKeyType, character.Character, CharacterFilterType](t)
-	mockedCharacterStorage.EXPECT().Add(mock.Anything).Once().Return(CharacterKeyType{}, nil)
+	mockedCharacterStorage.EXPECT().Add(mock.Anything, mock.Anything).Once().Return(CharacterKeyType{}, nil)
 
 	storageFS = mockedFS
 	s := NewStorage(mockedCharacterStorage)
@@ -120,7 +121,7 @@ func TestStorage_ImportData_AddCharacterError(t *testing.T) {
 	mockedFS.EXPECT().ReadFile("./import/character_2.json").Once().Return([]byte("{\"CharacterName\": \"Character 2\"}"), nil)
 
 	mockedCharacterStorage := NewMockStorable[CharacterKeyType, character.Character, CharacterFilterType](t)
-	mockedCharacterStorage.EXPECT().Add(mock.Anything).Twice().Return(CharacterKeyType{}, fmt.Errorf("error"))
+	mockedCharacterStorage.EXPECT().Add(mock.Anything, mock.Anything).Twice().Return(CharacterKeyType{}, fmt.Errorf("error"))
 
 	storageFS = mockedFS
 	s := NewStorage(mockedCharacterStorage)
@@ -130,8 +131,8 @@ func TestStorage_ImportData_AddCharacterError(t *testing.T) {
 
 func TestStorage_NewStorage_Success(t *testing.T) {
 	mockedCharacterStorage := NewMockStorable[CharacterKeyType, character.Character, CharacterFilterType](t)
-	mockedCharacterStorage.EXPECT().Count().Once().Return(42)
+	mockedCharacterStorage.EXPECT().Count(mock.Anything).Once().Return(42)
 	s := NewStorage(mockedCharacterStorage)
 
-	assert.Equal(t, 42, s.Characters().Count())
+	assert.Equal(t, 42, s.Characters().Count(context.Background()))
 }

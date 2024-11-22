@@ -53,7 +53,7 @@ func TestSchemaResolvers_ImportGCA5Character_Success(t *testing.T) {
 	mockedImporter.EXPECT().Execute("Test Campaign", mock.Anything).Return(testCharacter1, nil)
 
 	mockedCharacterStorable := storage.NewMockStorable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType](t)
-	mockedCharacterStorable.EXPECT().Add(mock.Anything).Return(storage.CharacterKeyType{Name: testCharacterName1, Campaign: testCampaign}, nil)
+	mockedCharacterStorable.EXPECT().Add(mock.Anything, mock.Anything).Return(storage.CharacterKeyType{Name: testCharacterName1, Campaign: testCampaign}, nil)
 
 	mockedStorage := storage.NewMockStorage(t)
 	mockedStorage.EXPECT().Characters().Return(mockedCharacterStorable)
@@ -121,7 +121,7 @@ func TestSchemaResolvers_ImportGCA5Character_StorageAddError(t *testing.T) {
 	mockedImporter.EXPECT().Execute("Test Campaign", mock.Anything).Return(testCharacter1, nil)
 
 	mockedCharacterStorable := storage.NewMockStorable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType](t)
-	mockedCharacterStorable.EXPECT().Add(mock.Anything).Return(storage.CharacterKeyType{}, errors.New("uh-oh"))
+	mockedCharacterStorable.EXPECT().Add(mock.Anything, mock.Anything).Return(storage.CharacterKeyType{}, errors.New("uh-oh"))
 
 	mockedStorage := storage.NewMockStorage(t)
 	mockedStorage.EXPECT().Characters().Return(mockedCharacterStorable)
@@ -152,7 +152,7 @@ func TestSchemaResolvers_ImportGCA5Character_StorageAddError(t *testing.T) {
 
 func TestSchemaResolvers_ListCharacters_Success(t *testing.T) {
 	mockedCharacterStorable := storage.NewMockStorable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType](t)
-	mockedCharacterStorable.EXPECT().List(storage.CharacterFilterType{Campaign: &testCampaign}).Return([]character.Character{testCharacter1, testCharacter2})
+	mockedCharacterStorable.EXPECT().List(mock.Anything, storage.CharacterFilterType{Campaign: &testCampaign}).Return([]character.Character{testCharacter1, testCharacter2})
 
 	mockedStorage := storage.NewMockStorage(t)
 	mockedStorage.EXPECT().Characters().Return(mockedCharacterStorable)
@@ -187,7 +187,7 @@ func TestSchemaResolvers_ListCharacters_Success(t *testing.T) {
 
 func TestSchemaResolvers_GetCharacter_Success(t *testing.T) {
 	mockedCharacterStorable := storage.NewMockStorable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType](t)
-	mockedCharacterStorable.EXPECT().Get(storage.CharacterKeyType{Campaign: testCampaign, Name: testCharacterName1}).Return(testCharacter1, nil)
+	mockedCharacterStorable.EXPECT().Get(mock.Anything, storage.CharacterKeyType{Campaign: testCampaign, Name: testCharacterName1}).Return(testCharacter1, nil)
 
 	mockedStorage := storage.NewMockStorage(t)
 	mockedStorage.EXPECT().Characters().Return(mockedCharacterStorable)
@@ -217,7 +217,7 @@ func TestSchemaResolvers_GetCharacter_Success(t *testing.T) {
 
 func TestSchemaResolvers_GetCharacter_StorageGetError(t *testing.T) {
 	mockedCharacterStorable := storage.NewMockStorable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType](t)
-	mockedCharacterStorable.EXPECT().Get(storage.CharacterKeyType{Campaign: testCampaign, Name: testCharacterName1}).Return(nil, errors.New("uh-oh"))
+	mockedCharacterStorable.EXPECT().Get(mock.Anything, storage.CharacterKeyType{Campaign: testCampaign, Name: testCharacterName1}).Return(nil, errors.New("uh-oh"))
 
 	mockedStorage := storage.NewMockStorage(t)
 	mockedStorage.EXPECT().Characters().Return(mockedCharacterStorable)

@@ -1,6 +1,7 @@
 package memstorage
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/pballok/gurps-bchest-be/internal/character"
@@ -17,7 +18,7 @@ func NewCharacterStorable() storage.Storable[storage.CharacterKeyType, character
 	}
 }
 
-func (s *characterStorable) Add(chr character.Character) (storage.CharacterKeyType, error) {
+func (s *characterStorable) Add(_ context.Context, chr character.Character) (storage.CharacterKeyType, error) {
 	id := storage.CharacterKeyType{
 		Name:     chr.Name(),
 		Campaign: chr.Campaign(),
@@ -32,19 +33,19 @@ func (s *characterStorable) Add(chr character.Character) (storage.CharacterKeyTy
 	return id, nil
 }
 
-func (*characterStorable) Update(id storage.CharacterKeyType, character character.Character) error {
+func (*characterStorable) Update(_ context.Context, id storage.CharacterKeyType, character character.Character) error {
 	return nil
 }
 
-func (*characterStorable) Delete(id storage.CharacterKeyType) error {
+func (*characterStorable) Delete(_ context.Context, id storage.CharacterKeyType) error {
 	return nil
 }
 
-func (s *characterStorable) Count() int {
+func (s *characterStorable) Count(_ context.Context) int {
 	return len(s.characters)
 }
 
-func (s *characterStorable) Get(id storage.CharacterKeyType) (character.Character, error) {
+func (s *characterStorable) Get(_ context.Context, id storage.CharacterKeyType) (character.Character, error) {
 	c, exists := s.characters[id]
 	if !exists {
 		return nil, fmt.Errorf(`character with campaign "%s", name "%s" not found`, id.Campaign, id.Name)
@@ -53,7 +54,7 @@ func (s *characterStorable) Get(id storage.CharacterKeyType) (character.Characte
 	return c, nil
 }
 
-func (s *characterStorable) List(filters storage.CharacterFilterType) []character.Character {
+func (s *characterStorable) List(_ context.Context, filters storage.CharacterFilterType) []character.Character {
 	chars := make([]character.Character, 0)
 	for _, c := range s.characters {
 		if filters.Campaign != nil && *(filters.Campaign) == c.Campaign() {

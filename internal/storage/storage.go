@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -47,7 +48,7 @@ func (s *storage) importCharacter(data []byte) (CharacterKeyType, error) {
 	if err != nil {
 		return CharacterKeyType{}, fmt.Errorf(`error importing character: %w`, err)
 	}
-	id, err := s.characters.Add(char)
+	id, err := s.characters.Add(context.Background(), char)
 	if err != nil {
 		return CharacterKeyType{}, fmt.Errorf(`error importing character "%s" to storage: %w`, char.Name(), err)
 	}

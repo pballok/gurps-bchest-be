@@ -20,7 +20,7 @@ func (r *mutationResolver) ImportGCA5Character(ctx context.Context, input model.
 		return nil, err
 	}
 
-	_, err = r.Storage.Characters().Add(newChar)
+	_, err = r.Storage.Characters().Add(ctx, newChar)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (r *mutationResolver) ImportGCA5Character(ctx context.Context, input model.
 
 // Characters is the resolver for the characters field.
 func (r *queryResolver) Characters(ctx context.Context, campaign string) ([]*model.Character, error) {
-	chars := r.Storage.Characters().List(storage.CharacterFilterType{Campaign: &campaign})
+	chars := r.Storage.Characters().List(ctx, storage.CharacterFilterType{Campaign: &campaign})
 
 	modelChars := make([]*model.Character, 0)
 	for _, char := range chars {
@@ -48,7 +48,7 @@ func (r *queryResolver) Characters(ctx context.Context, campaign string) ([]*mod
 
 // Character is the resolver for the character field.
 func (r *queryResolver) Character(ctx context.Context, campaign string, name string) (*model.Character, error) {
-	c, err := r.Storage.Characters().Get(storage.CharacterKeyType{
+	c, err := r.Storage.Characters().Get(ctx, storage.CharacterKeyType{
 		Campaign: campaign,
 		Name:     name,
 	})
