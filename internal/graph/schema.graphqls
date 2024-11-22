@@ -27,7 +27,7 @@ type Attribute {
   cost: Int!
 }
 
-input CharacterGCA5Import {
+input ImportGCA5CharacterInput {
   campaign: String!
   data: String!
 }
@@ -38,5 +38,5 @@ type Query {
 }
 
 type Mutation {
-  importGCA5Character(input: CharacterGCA5Import!): Character!
+  importGCA5Character(input: ImportGCA5CharacterInput!): Character!
 }

@@ -22,7 +22,7 @@ type Character struct {
 	Attributes      []*Attribute `json:"attributes"`
 }
 
-type CharacterGCA5Import struct {
+type ImportGCA5CharacterInput struct {
 	Campaign string `json:"campaign"`
 	Data     string `json:"data"`
 }

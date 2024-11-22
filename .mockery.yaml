@@ -1,8 +1,15 @@
+#file: noinspection SpellCheckingInspection
 with-expecter: True
-dir: "internal/mocks/{{.PackageName}}"
 inpackage: True
+dir: "{{.InterfaceDir}}"
 packages:
   github.com/pballok/gurps-bchest-be/internal/storage:
     interfaces:
+      fileSystemInterface:
       Storable:
-      fileSystem:
+      Storage:
+  github.com/pballok/gurps-bchest-be/internal/character:
+    interfaces:
+      Character:
+    types:
+      ImporterFunc:

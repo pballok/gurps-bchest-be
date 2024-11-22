@@ -107,6 +107,8 @@ func NewCharacter(name string, player string, campaign string, points int) Chara
 	return c
 }
 
+type ImporterFunc func(string, []byte) (Character, error)
+
 func FromGCA5Import(campaign string, jsonString []byte) (Character, error) {
 	characterData := characterGCA5Import{}
 	err := json.Unmarshal(jsonString, &characterData)

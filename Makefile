@@ -46,7 +46,7 @@ graphql: clear-graphql
 .PHONY: clear-mocks
 clear-mocks:
 	@echo "+ $@"
-	@rm -rf internal/mocks
+	@find . -name "mock_*.go" -type f -delete
 
 .PHONY: mocks
 mocks: clear-mocks

@@ -62,7 +62,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		ImportGCA5Character func(childComplexity int, input model.CharacterGCA5Import) int
+		ImportGCA5Character func(childComplexity int, input model.ImportGCA5CharacterInput) int
 	}
 
 	Query struct {
@@ -72,7 +72,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	ImportGCA5Character(ctx context.Context, input model.CharacterGCA5Import) (*model.Character, error)
+	ImportGCA5Character(ctx context.Context, input model.ImportGCA5CharacterInput) (*model.Character, error)
 }
 type QueryResolver interface {
 	Characters(ctx context.Context, campaign string) ([]*model.Character, error)
@@ -164,7 +164,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ImportGCA5Character(childComplexity, args["input"].(model.CharacterGCA5Import)), true
+		return e.complexity.Mutation.ImportGCA5Character(childComplexity, args["input"].(model.ImportGCA5CharacterInput)), true
 
 	case "Query.character":
 		if e.complexity.Query.Character == nil {
@@ -195,14 +195,14 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 }
 
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
-	rc := graphql.GetOperationContext(ctx)
-	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
+	opCtx := graphql.GetOperationContext(ctx)
+	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputCharacterGCA5Import,
+		ec.unmarshalInputImportGCA5CharacterInput,
 	)
 	first := true
 
-	switch rc.Operation.Operation {
+	switch opCtx.Operation.Operation {
 	case ast.Query:
 		return func(ctx context.Context) *graphql.Response {
 			var response graphql.Response
@@ -210,7 +210,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			if first {
 				first = false
 				ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
-				data = ec._Query(ctx, rc.Operation.SelectionSet)
+				data = ec._Query(ctx, opCtx.Operation.SelectionSet)
 			} else {
 				if atomic.LoadInt32(&ec.pendingDeferred) > 0 {
 					result := <-ec.deferredResults
@@ -240,7 +240,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			}
 			first = false
 			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
-			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
+			data := ec._Mutation(ctx, opCtx.Operation.SelectionSet)
 			var buf bytes.Buffer
 			data.MarshalGQL(&buf)
 
@@ -328,13 +328,13 @@ func (ec *executionContext) field_Mutation_importGCA5Character_args(ctx context.
 func (ec *executionContext) field_Mutation_importGCA5Character_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (model.CharacterGCA5Import, error) {
+) (model.ImportGCA5CharacterInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCharacterGCA5Import2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterGCA5Import(ctx, tmp)
+		return ec.unmarshalNImportGCA5CharacterInput2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐImportGCA5CharacterInput(ctx, tmp)
 	}
 
-	var zeroVal model.CharacterGCA5Import
+	var zeroVal model.ImportGCA5CharacterInput
 	return zeroVal, nil
 }
 
@@ -853,7 +853,7 @@ func (ec *executionContext) _Mutation_importGCA5Character(ctx context.Context, f
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ImportGCA5Character(rctx, fc.Args["input"].(model.CharacterGCA5Import))
+		return ec.resolvers.Mutation().ImportGCA5Character(rctx, fc.Args["input"].(model.ImportGCA5CharacterInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2939,8 +2939,8 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputCharacterGCA5Import(ctx context.Context, obj interface{}) (model.CharacterGCA5Import, error) {
-	var it model.CharacterGCA5Import
+func (ec *executionContext) unmarshalInputImportGCA5CharacterInput(ctx context.Context, obj interface{}) (model.ImportGCA5CharacterInput, error) {
+	var it model.ImportGCA5CharacterInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -3648,11 +3648,6 @@ func (ec *executionContext) marshalNCharacter2ᚖgithubᚗcomᚋpballokᚋgurps�
 	return ec._Character(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCharacterGCA5Import2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterGCA5Import(ctx context.Context, v interface{}) (model.CharacterGCA5Import, error) {
-	res, err := ec.unmarshalInputCharacterGCA5Import(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
 	res, err := graphql.UnmarshalFloatContext(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3666,6 +3661,11 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 		}
 	}
 	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) unmarshalNImportGCA5CharacterInput2githubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐImportGCA5CharacterInput(ctx context.Context, v interface{}) (model.ImportGCA5CharacterInput, error) {
+	res, err := ec.unmarshalInputImportGCA5CharacterInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
