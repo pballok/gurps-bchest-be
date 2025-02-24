@@ -31,7 +31,7 @@ package: test
 .PHONY: run
 run: package
 	@echo "+ $@"
-	docker run --rm --name $(APP_NAME) -p 8080:8080 $(DOCKER_IMAGE)
+	docker compose up
 
 .PHONY: clear-graphql
 clear-graphql:

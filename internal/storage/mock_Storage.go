@@ -67,39 +67,6 @@ func (_c *MockStorage_Characters_Call) RunAndReturn(run func() Storable[Characte
 	return _c
 }
 
-// ImportData provides a mock function with given fields: _a0
-func (_m *MockStorage) ImportData(_a0 string) {
-	_m.Called(_a0)
-}
-
-// MockStorage_ImportData_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ImportData'
-type MockStorage_ImportData_Call struct {
-	*mock.Call
-}
-
-// ImportData is a helper method to define mock.On call
-//   - _a0 string
-func (_e *MockStorage_Expecter) ImportData(_a0 interface{}) *MockStorage_ImportData_Call {
-	return &MockStorage_ImportData_Call{Call: _e.mock.On("ImportData", _a0)}
-}
-
-func (_c *MockStorage_ImportData_Call) Run(run func(_a0 string)) *MockStorage_ImportData_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(string))
-	})
-	return _c
-}
-
-func (_c *MockStorage_ImportData_Call) Return() *MockStorage_ImportData_Call {
-	_c.Call.Return()
-	return _c
-}
-
-func (_c *MockStorage_ImportData_Call) RunAndReturn(run func(string)) *MockStorage_ImportData_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // NewMockStorage creates a new instance of MockStorage. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockStorage(t interface {

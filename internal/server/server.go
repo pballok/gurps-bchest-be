@@ -17,8 +17,6 @@ type Server struct {
 }
 
 func NewServer(storage storage.Storage) *Server {
-	storage.ImportData("./import")
-
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		Storage:           storage,
 		CharacterImporter: character.FromGCA5Import,

@@ -27,11 +27,11 @@ func TestCharacterStorable_Add_Success(t *testing.T) {
 	assert.Equal(t, 1, s.Count(context.Background()))
 }
 
-func TestCharacterStorable_Add_Fail(t *testing.T) {
+func TestCharacterStorable_AddDuplicate_FailsWithError(t *testing.T) {
 	s := NewCharacterStorable()
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	_, _ = s.Add(context.Background(), c)
-	_, err := s.Add(context.Background(), c) // Add same character again
+	_, err := s.Add(context.Background(), c)
 	assert.NotNil(t, err)
 	assert.Equal(t, 1, s.Count(context.Background()))
 }
