@@ -2,10 +2,12 @@
 with-expecter: True
 inpackage: True
 dir: "{{.InterfaceDir}}"
+resolve-type-alias: False
+disable-version-string: True
+issue-845-fix: True
 packages:
   github.com/pballok/gurps-bchest-be/internal/storage:
     interfaces:
-      fileSystemInterface:
       Storable:
       Storage:
   github.com/pballok/gurps-bchest-be/internal/character:
