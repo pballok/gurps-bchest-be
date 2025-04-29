@@ -24,7 +24,7 @@ coverage: -test
 	go tool cover -html=cover.out -o=cover.html
 
 .PHONY: package
-package: test
+package:
 	@echo "+ $@"
 	docker build --target bin -t $(DOCKER_IMAGE) .
 

@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: gurps-bchest-be
+    image: gurps-bchest-be:0.1.0
     ports:
       - "8080:8080"
     env_file:
