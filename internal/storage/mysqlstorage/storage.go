@@ -15,7 +15,6 @@ import (
 )
 
 type mySQLStorage struct {
-	db         *sql.DB
 	characters storage.Storable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType]
 }
 
@@ -38,28 +37,31 @@ func NewDBConnection() (*sql.DB, error) { // coverage-ignore
 		return nil, fmt.Errorf("failed to ping mysql: %v", err)
 	}
 
+	return db, nil
+}
+
+func Migrate(db *sql.DB) error {
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create mysql driver: %v", err)
+		return fmt.Errorf("failed to create mysql driver: %v", err)
 	}
 
 	m, err := migrate.NewWithDatabaseInstance("file://migrations", "mysql", driver)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create migration instance: %v", err)
+		return fmt.Errorf("failed to create migration instance: %v", err)
 	}
 
 	err = m.Up()
 	if err != nil && err != migrate.ErrNoChange {
-		return nil, fmt.Errorf("failed to migrate database: %v", err)
+		return fmt.Errorf("failed to migrate database: %v", err)
 	}
 
-	return db, nil
+	return nil
 }
 
 func NewStorage(db *sql.DB) storage.Storage {
 	s := mySQLStorage{
-		db:         db,
-		characters: NewCharacterStorable(),
+		characters: NewCharacterStorable(db),
 	}
 	return &s
 }

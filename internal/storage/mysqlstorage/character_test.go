@@ -4,28 +4,38 @@ import (
 	"context"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/pballok/gurps-bchest-be/internal/character"
 	"github.com/pballok/gurps-bchest-be/internal/storage"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCharacterStorable_NewStore(t *testing.T) {
-	s := NewCharacterStorable()
+	db, _, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+	s := NewCharacterStorable(db)
 
 	assert.NotNil(t, 0, s)
 	assert.Equal(t, 0, s.Count(context.Background()))
 }
 
 func TestCharacterStorable_Add_Success(t *testing.T) {
-	s := NewCharacterStorable()
+	db, _, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+	s := NewCharacterStorable(db)
+
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	_, err := s.Add(context.Background(), c)
 
-	assert.Error(t, err)
+	assert.NoError(t, err)
 }
 
 func TestCharacterStorable_Update_Success(t *testing.T) {
-	s := NewCharacterStorable()
+	db, _, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+	s := NewCharacterStorable(db)
+
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 
 	err := s.Update(context.Background(), storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"}, c)
@@ -34,7 +44,9 @@ func TestCharacterStorable_Update_Success(t *testing.T) {
 }
 
 func TestCharacterStorable_Delete_Success(t *testing.T) {
-	s := NewCharacterStorable()
+	db, _, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+	s := NewCharacterStorable(db)
 
 	err := s.Delete(context.Background(), storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"})
 
@@ -42,12 +54,18 @@ func TestCharacterStorable_Delete_Success(t *testing.T) {
 }
 
 func TestCharacterStorable_Count_EmptyStorage(t *testing.T) {
-	s := NewCharacterStorable()
+	db, _, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+	s := NewCharacterStorable(db)
+
 	assert.Equal(t, 0, s.Count(context.Background()))
 }
 
 func TestCharacterStorable_Get_Success(t *testing.T) {
-	s := NewCharacterStorable()
+	db, _, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+	s := NewCharacterStorable(db)
+
 	id := storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"}
 	_, err := s.Get(context.Background(), id)
 
@@ -55,7 +73,9 @@ func TestCharacterStorable_Get_Success(t *testing.T) {
 }
 
 func TestCharacterStorable_List_Success(t *testing.T) {
-	s := NewCharacterStorable()
+	db, _, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+	s := NewCharacterStorable(db)
 
 	campaign := "Campaign1"
 	filtered := s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})

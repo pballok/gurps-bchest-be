@@ -23,6 +23,11 @@ func main() {
 	}
 	defer func() { _ = gurpsDB.Close() }()
 
+	err = mysqlstorage.Migrate(gurpsDB)
+	if err != nil {
+		panic(err)
+	}
+
 	gurpsStorage := mysqlstorage.NewStorage(gurpsDB)
 	gurpsServer := server.NewServer(gurpsStorage)
 

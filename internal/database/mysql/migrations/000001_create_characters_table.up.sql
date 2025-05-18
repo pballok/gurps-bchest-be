@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `character`(
-    char_name VARCHAR(127) NOT NULL,
+    name VARCHAR(127) NOT NULL,
     campaign VARCHAR(127) NOT NULL,
     player VARCHAR(127) NOT NULL,
     points INT NOT NULL,
@@ -16,5 +16,5 @@ CREATE TABLE IF NOT EXISTS `character`(
     bs_modif FLOAT NOT NULL DEFAULT 0.0,
     bm_modif FLOAT NOT NULL DEFAULT 0.0,
 
-    PRIMARY KEY (char_name, campaign)
+    PRIMARY KEY (name, campaign)
 )

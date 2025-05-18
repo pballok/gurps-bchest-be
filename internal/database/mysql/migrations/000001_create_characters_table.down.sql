@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS character
+DROP TABLE IF EXISTS `character`

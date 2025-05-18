@@ -5,7 +5,6 @@ package graph
 import (
 	"bytes"
 	"context"
-	"embed"
 	"errors"
 	"fmt"
 	"strconv"
@@ -295,19 +294,50 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "schema.graphqls"
-var sourcesFS embed.FS
-
-func sourceData(filename string) string {
-	data, err := sourcesFS.ReadFile(filename)
-	if err != nil {
-		panic(fmt.Sprintf("codegen problem: %s not available", filename))
-	}
-	return string(data)
+var sources = []*ast.Source{
+	{Name: "../../spec/schema.graphqls", Input: `type Character {
+  name: String!
+  campaign: String!
+  player: String!
+  availablePoints: Int!
+  attributes: [Attribute!]!
 }
 
-var sources = []*ast.Source{
-	{Name: "schema.graphqls", Input: sourceData("schema.graphqls"), BuiltIn: false},
+enum AttributeType {
+  ST,
+  DX,
+  IQ,
+  HT,
+  HP,
+  CURR_HP,
+  WILL,
+  PER,
+  FP,
+  CURR_FP,
+  BS,
+  BM,
+}
+
+type Attribute {
+  attributeType: AttributeType!
+  value: Float!
+  cost: Int!
+}
+
+input ImportGCA5CharacterInput {
+  campaign: String!
+  data: String!
+}
+
+type Query {
+  characters(campaign: String!): [Character!]
+  character(campaign: String!, name: String!): Character!
+}
+
+type Mutation {
+  importGCA5Character(input: ImportGCA5CharacterInput!): Character!
+}
+`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
