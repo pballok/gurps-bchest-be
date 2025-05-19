@@ -13,7 +13,6 @@ func TestCharacterStorable_NewStore(t *testing.T) {
 	s := NewCharacterStorable()
 
 	assert.NotNil(t, 0, s)
-	assert.Equal(t, 0, s.Count(context.Background()))
 }
 
 func TestCharacterStorable_Add_Success(t *testing.T) {
@@ -24,7 +23,6 @@ func TestCharacterStorable_Add_Success(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "Test", id.Name)
 	assert.Equal(t, "Campaign", id.Campaign)
-	assert.Equal(t, 1, s.Count(context.Background()))
 }
 
 func TestCharacterStorable_AddDuplicate_FailsWithError(t *testing.T) {
@@ -33,7 +31,6 @@ func TestCharacterStorable_AddDuplicate_FailsWithError(t *testing.T) {
 	_, _ = s.Add(context.Background(), c)
 	_, err := s.Add(context.Background(), c)
 	assert.NotNil(t, err)
-	assert.Equal(t, 1, s.Count(context.Background()))
 }
 
 func TestCharacterStorable_Update_Success(t *testing.T) {
@@ -51,20 +48,6 @@ func TestCharacterStorable_Delete_Success(t *testing.T) {
 	err := s.Delete(context.Background(), storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"})
 
 	assert.Nil(t, err)
-}
-
-func TestCharacterStorable_Count_EmptyStorage(t *testing.T) {
-	s := NewCharacterStorable()
-	assert.Equal(t, 0, s.Count(context.Background()))
-}
-
-func TestCharacterStorable_Count_StorageWithItems(t *testing.T) {
-	s := NewCharacterStorable()
-	_, _ = s.Add(context.Background(), character.NewCharacter("Test1", "Player1", "Campaign", 10))
-	_, _ = s.Add(context.Background(), character.NewCharacter("Test2", "Player2", "Campaign", 10))
-	_, _ = s.Add(context.Background(), character.NewCharacter("Test3", "Player3", "Campaign", 10))
-
-	assert.Equal(t, 3, s.Count(context.Background()))
 }
 
 func TestCharacterStorable_Get_Success(t *testing.T) {

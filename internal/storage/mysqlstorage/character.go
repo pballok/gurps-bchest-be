@@ -46,10 +46,6 @@ func (*characterStorable) Delete(_ context.Context, id storage.CharacterKeyType)
 	return nil
 }
 
-func (s *characterStorable) Count(_ context.Context) int {
-	return 0
-}
-
 func (s *characterStorable) Get(_ context.Context, id storage.CharacterKeyType) (character.Character, error) {
 	return nil, fmt.Errorf(`character with campaign "%s", name "%s" not found`, id.Campaign, id.Name)
 }

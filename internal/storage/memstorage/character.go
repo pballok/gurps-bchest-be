@@ -41,10 +41,6 @@ func (*characterStorable) Delete(_ context.Context, id storage.CharacterKeyType)
 	return nil
 }
 
-func (s *characterStorable) Count(_ context.Context) int {
-	return len(s.characters)
-}
-
 func (s *characterStorable) Get(_ context.Context, id storage.CharacterKeyType) (character.Character, error) {
 	c, exists := s.characters[id]
 	if !exists {

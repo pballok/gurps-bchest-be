@@ -17,7 +17,6 @@ func TestCharacterStorable_NewStore(t *testing.T) {
 	s := NewCharacterStorable(db)
 
 	assert.NotNil(t, 0, s)
-	assert.Equal(t, 0, s.Count(context.Background()))
 }
 
 func TestCharacterStorable_Add_Success(t *testing.T) {
@@ -51,14 +50,6 @@ func TestCharacterStorable_Delete_Success(t *testing.T) {
 	err := s.Delete(context.Background(), storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"})
 
 	assert.Nil(t, err)
-}
-
-func TestCharacterStorable_Count_EmptyStorage(t *testing.T) {
-	db, _, _ := sqlmock.New()
-	defer func() { _ = db.Close() }()
-	s := NewCharacterStorable(db)
-
-	assert.Equal(t, 0, s.Count(context.Background()))
 }
 
 func TestCharacterStorable_Get_Success(t *testing.T) {
