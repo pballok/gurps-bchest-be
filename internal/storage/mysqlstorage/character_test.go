@@ -20,11 +20,17 @@ func TestCharacterStorable_NewStore(t *testing.T) {
 }
 
 func TestCharacterStorable_Add_Success(t *testing.T) {
-	db, _, _ := sqlmock.New()
+	db, mock, _ := sqlmock.New()
 	defer func() { _ = db.Close() }()
+
+	c := character.NewCharacter("Test", "Player", "Campaign", 100)
+
+	mock.ExpectExec("INSERT INTO `character`").WithArgs(
+		c.Name(), c.Campaign(), c.Player(), c.Points(), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+	).WillReturnResult(sqlmock.NewResult(1, 1))
+
 	s := NewCharacterStorable(db)
 
-	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	_, err := s.Add(context.Background(), c)
 
 	assert.NoError(t, err)

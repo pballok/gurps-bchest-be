@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/pballok/gurps-bchest-be/internal/character"
+	"github.com/pballok/gurps-bchest-be/internal/graph/model"
 	"github.com/pballok/gurps-bchest-be/internal/storage"
 )
 
@@ -20,13 +21,29 @@ func NewCharacterStorable(db *sql.DB) storage.Storable[storage.CharacterKeyType,
 }
 
 func (s *characterStorable) Add(ctx context.Context, chr character.Character) (storage.CharacterKeyType, error) {
+	query :=
+		"INSERT INTO `character` " +
+			"(name, campaign, player, points, st_modif, dx_modif, iq_modif, ht_modif, hp_modif, currhp_modif, will_modif, per_modif, fp_modif, currfp_modif, bs_modif, bm_modif)" +
+			"  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 	_, err := s.store.ExecContext(
 		ctx,
-		"INSERT INTO `character` (name, campaign, player, points) VALUES (?, ?, ?, ?)",
+		query,
 		chr.Name(),
 		chr.Campaign(),
 		chr.Player(),
 		chr.Points(),
+		chr.Attribute(model.AttributeTypeSt).Modifier(),
+		chr.Attribute(model.AttributeTypeDx).Modifier(),
+		chr.Attribute(model.AttributeTypeIq).Modifier(),
+		chr.Attribute(model.AttributeTypeHt).Modifier(),
+		chr.Attribute(model.AttributeTypeHp).Modifier(),
+		chr.Attribute(model.AttributeTypeCurrHp).Modifier(),
+		chr.Attribute(model.AttributeTypeWill).Modifier(),
+		chr.Attribute(model.AttributeTypePer).Modifier(),
+		chr.Attribute(model.AttributeTypeFp).Modifier(),
+		chr.Attribute(model.AttributeTypeCurrFp).Modifier(),
+		chr.Attribute(model.AttributeTypeBs).Modifier(),
+		chr.Attribute(model.AttributeTypeBm).Modifier(),
 	)
 	if err != nil {
 		return storage.CharacterKeyType{}, err

@@ -11,7 +11,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 
-	"github.com/pballok/gurps-bchest-be/internal/character"
 	"github.com/pballok/gurps-bchest-be/internal/graph"
 	"github.com/pballok/gurps-bchest-be/internal/storage"
 )
@@ -22,8 +21,7 @@ type Server struct {
 
 func NewServer(storage storage.Storage) *Server {
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		Storage:           storage,
-		CharacterImporter: character.FromGCA5Import,
+		Storage: storage,
 	}}))
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})

@@ -46,9 +46,9 @@ graphql: clear-graphql
 .PHONY: clear-mocks
 clear-mocks:
 	@echo "+ $@"
-	@find . -name "mock_*.go" -type f -delete
+	@rm -rf internal/mocks/*
 
 .PHONY: mocks
 mocks: clear-mocks
 	@echo "+ $@"
-	docker run -v .:/src -w /src vektra/mockery --all
+	docker run --rm -v .://src -w //src vektra/mockery:3

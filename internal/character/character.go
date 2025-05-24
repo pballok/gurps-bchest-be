@@ -26,7 +26,7 @@ type character struct {
 	attributes map[model.AttributeType]attribute.Attribute
 }
 
-type characterGCA5Import struct {
+type importDataGCA5 struct {
 	Name     string  `json:"CharacterName"`
 	Player   string  `json:"Playername"`
 	Points   float64 `json:"TotalPoints"`
@@ -107,10 +107,8 @@ func NewCharacter(name string, player string, campaign string, points int) Chara
 	return c
 }
 
-type ImporterFunc func(string, []byte) (Character, error)
-
-func FromGCA5Import(campaign string, jsonString []byte) (Character, error) {
-	characterData := characterGCA5Import{}
+func NewCharacterFromGCA5Import(campaign string, jsonString []byte) (Character, error) {
+	characterData := importDataGCA5{}
 	err := json.Unmarshal(jsonString, &characterData)
 	if err != nil {
 		return nil, fmt.Errorf("character import error: %w", err)

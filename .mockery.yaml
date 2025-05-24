@@ -1,10 +1,8 @@
-#file: noinspection SpellCheckingInspection
-with-expecter: True
-inpackage: True
-dir: "{{.InterfaceDir}}"
-resolve-type-alias: False
-disable-version-string: True
-issue-845-fix: True
+all: false
+dir: "internal/mocks"
+filename: "{{.SrcPackageName}}_mocks.go"
+pkgname: "mocks"
+template: testify
 packages:
   github.com/pballok/gurps-bchest-be/internal/storage:
     interfaces:
@@ -13,5 +11,3 @@ packages:
   github.com/pballok/gurps-bchest-be/internal/character:
     interfaces:
       Character:
-    types:
-      ImporterFunc:

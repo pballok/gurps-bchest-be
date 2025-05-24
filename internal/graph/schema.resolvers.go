@@ -9,13 +9,14 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/pballok/gurps-bchest-be/internal/character"
 	"github.com/pballok/gurps-bchest-be/internal/graph/model"
 	"github.com/pballok/gurps-bchest-be/internal/storage"
 )
 
 // ImportGCA5Character is the resolver for the importGCA5Character field.
 func (r *mutationResolver) ImportGCA5Character(ctx context.Context, input model.ImportGCA5CharacterInput) (*model.Character, error) {
-	newChar, err := r.CharacterImporter(input.Campaign, []byte(input.Data))
+	newChar, err := character.NewCharacterFromGCA5Import(input.Campaign, []byte(input.Data))
 	if err != nil {
 		return nil, err
 	}
