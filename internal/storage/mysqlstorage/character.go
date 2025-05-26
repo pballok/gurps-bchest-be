@@ -3,6 +3,7 @@ package mysqlstorage
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/pballok/gurps-bchest-be/internal/character"
@@ -63,8 +64,39 @@ func (*characterStorable) Delete(_ context.Context, id storage.CharacterKeyType)
 	return nil
 }
 
-func (s *characterStorable) Get(_ context.Context, id storage.CharacterKeyType) (character.Character, error) {
-	return nil, fmt.Errorf(`character with campaign "%s", name "%s" not found`, id.Campaign, id.Name)
+func (s *characterStorable) Get(ctx context.Context, id storage.CharacterKeyType) (character.Character, error) {
+	query :=
+		"SELECT name, campaign, player, points, st_modif, dx_modif, iq_modif, ht_modif, hp_modif, currhp_modif, will_modif, per_modif, fp_modif, currfp_modif, bs_modif, bm_modif" +
+			" FROM `character` WHERE name=? AND campaign=?"
+
+	var name, campaign, player string
+	var points int
+	var stModif, dxModif, iqModif, htModif, hpModif, currHpModif, willModif, perModif, fpModif, currFpModif, bsModif, bmModif float64
+	err := s.store.QueryRowContext(
+		ctx, query, id.Name, id.Campaign,
+	).Scan(&name, &campaign, &player, &points, &stModif, &dxModif, &iqModif, &htModif, &hpModif, &currHpModif, &willModif, &perModif, &fpModif, &currFpModif, &bsModif, &bmModif)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, fmt.Errorf(`character with capaign "%s", name "%s" not found`, id.Campaign, id.Name)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	c := character.NewCharacter(name, player, campaign, points)
+	c.Attribute(model.AttributeTypeSt).SetModifier(stModif)
+	c.Attribute(model.AttributeTypeDx).SetModifier(dxModif)
+	c.Attribute(model.AttributeTypeIq).SetModifier(iqModif)
+	c.Attribute(model.AttributeTypeHt).SetModifier(htModif)
+	c.Attribute(model.AttributeTypeHp).SetModifier(hpModif)
+	c.Attribute(model.AttributeTypeCurrHp).SetModifier(currHpModif)
+	c.Attribute(model.AttributeTypeWill).SetModifier(willModif)
+	c.Attribute(model.AttributeTypePer).SetModifier(perModif)
+	c.Attribute(model.AttributeTypeFp).SetModifier(fpModif)
+	c.Attribute(model.AttributeTypeCurrFp).SetModifier(currFpModif)
+	c.Attribute(model.AttributeTypeBs).SetModifier(bsModif)
+	c.Attribute(model.AttributeTypeBm).SetModifier(bmModif)
+
+	return c, nil
 }
 
 func (s *characterStorable) List(_ context.Context, filters storage.CharacterFilterType) []character.Character {
