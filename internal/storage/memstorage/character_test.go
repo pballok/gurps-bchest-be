@@ -12,7 +12,7 @@ import (
 func TestCharacterStorable_NewStore(t *testing.T) {
 	s := NewCharacterStorable()
 
-	assert.NotNil(t, 0, s)
+	assert.NotNil(t, s)
 }
 
 func TestCharacterStorable_Add_Success(t *testing.T) {
@@ -20,7 +20,7 @@ func TestCharacterStorable_Add_Success(t *testing.T) {
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	id, err := s.Add(context.Background(), c)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "Test", id.Name)
 	assert.Equal(t, "Campaign", id.Campaign)
 }
@@ -30,7 +30,7 @@ func TestCharacterStorable_AddDuplicate_FailsWithError(t *testing.T) {
 	c := character.NewCharacter("Test", "Player", "Campaign", 10)
 	_, _ = s.Add(context.Background(), c)
 	_, err := s.Add(context.Background(), c)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 func TestCharacterStorable_Update_Success(t *testing.T) {
@@ -39,7 +39,7 @@ func TestCharacterStorable_Update_Success(t *testing.T) {
 
 	err := s.Update(context.Background(), storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"}, c)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestCharacterStorable_Delete_Success(t *testing.T) {
@@ -47,7 +47,7 @@ func TestCharacterStorable_Delete_Success(t *testing.T) {
 
 	err := s.Delete(context.Background(), storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestCharacterStorable_Get_Success(t *testing.T) {
@@ -56,7 +56,7 @@ func TestCharacterStorable_Get_Success(t *testing.T) {
 	id, _ := s.Add(context.Background(), c)
 	addedChar, err := s.Get(context.Background(), id)
 
-	assert.Equal(t, nil, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "Test", addedChar.Name())
 }
 
@@ -70,7 +70,7 @@ func TestCharacterStorable_Get_ReturnsWithExpectedItem(t *testing.T) {
 		Campaign: "Campaign",
 	})
 
-	assert.Equal(t, nil, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "Test2", addedChar.Name())
 	assert.Equal(t, "Player2", addedChar.Player())
 	assert.Equal(t, "Campaign", addedChar.Campaign())
@@ -82,7 +82,7 @@ func TestCharacterStorable_Get_Fail(t *testing.T) {
 	_, _ = s.Add(context.Background(), character.NewCharacter("Test", "Player", "Campaign", 10))
 	_, err := s.Get(context.Background(), storage.CharacterKeyType{Name: "Test1", Campaign: "Campaign"})
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 func TestCharacterStorable_List_Success(t *testing.T) {
@@ -92,14 +92,17 @@ func TestCharacterStorable_List_Success(t *testing.T) {
 	_, _ = s.Add(context.Background(), character.NewCharacter("Test3", "Player3", "Campaign1", 30))
 
 	campaign := "Campaign1"
-	filtered := s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	filtered, err := s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	assert.NoError(t, err)
 	assert.Equal(t, 2, len(filtered))
 
 	campaign = "Campaign2"
-	filtered = s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	filtered, err = s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	assert.NoError(t, err)
 	assert.Equal(t, 1, len(filtered))
 
 	campaign = "None"
-	filtered = s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	filtered, err = s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	assert.NoError(t, err)
 	assert.Equal(t, 0, len(filtered))
 }
