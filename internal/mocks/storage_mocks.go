@@ -200,7 +200,7 @@ func (_c *MockStorable_Get_Call[K, V, F]) RunAndReturn(run func(ctx context.Cont
 }
 
 // List provides a mock function for the type MockStorable
-func (_mock *MockStorable[K, V, F]) List(ctx context.Context, filters F) []V {
+func (_mock *MockStorable[K, V, F]) List(ctx context.Context, filters F) ([]V, error) {
 	ret := _mock.Called(ctx, filters)
 
 	if len(ret) == 0 {
@@ -208,6 +208,10 @@ func (_mock *MockStorable[K, V, F]) List(ctx context.Context, filters F) []V {
 	}
 
 	var r0 []V
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, F) ([]V, error)); ok {
+		return returnFunc(ctx, filters)
+	}
 	if returnFunc, ok := ret.Get(0).(func(context.Context, F) []V); ok {
 		r0 = returnFunc(ctx, filters)
 	} else {
@@ -215,7 +219,12 @@ func (_mock *MockStorable[K, V, F]) List(ctx context.Context, filters F) []V {
 			r0 = ret.Get(0).([]V)
 		}
 	}
-	return r0
+	if returnFunc, ok := ret.Get(1).(func(context.Context, F) error); ok {
+		r1 = returnFunc(ctx, filters)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
 }
 
 // MockStorable_List_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'List'
@@ -237,12 +246,12 @@ func (_c *MockStorable_List_Call[K, V, F]) Run(run func(ctx context.Context, fil
 	return _c
 }
 
-func (_c *MockStorable_List_Call[K, V, F]) Return(vs []V) *MockStorable_List_Call[K, V, F] {
-	_c.Call.Return(vs)
+func (_c *MockStorable_List_Call[K, V, F]) Return(vs []V, err error) *MockStorable_List_Call[K, V, F] {
+	_c.Call.Return(vs, err)
 	return _c
 }
 
-func (_c *MockStorable_List_Call[K, V, F]) RunAndReturn(run func(ctx context.Context, filters F) []V) *MockStorable_List_Call[K, V, F] {
+func (_c *MockStorable_List_Call[K, V, F]) RunAndReturn(run func(ctx context.Context, filters F) ([]V, error)) *MockStorable_List_Call[K, V, F] {
 	_c.Call.Return(run)
 	return _c
 }

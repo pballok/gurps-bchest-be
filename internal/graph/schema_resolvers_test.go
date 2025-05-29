@@ -189,7 +189,7 @@ func TestSchemaResolvers_ImportGCA5Character_StorageAddError(t *testing.T) {
 
 func TestSchemaResolvers_ListCharacters_Success(t *testing.T) {
 	mockedCharacterStorable := mocks.NewMockStorable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType](t)
-	mockedCharacterStorable.EXPECT().List(mock.Anything, storage.CharacterFilterType{Campaign: &testCampaign}).Return([]character.Character{testCharacter1, testCharacter2})
+	mockedCharacterStorable.EXPECT().List(mock.Anything, storage.CharacterFilterType{Campaign: &testCampaign}).Return([]character.Character{testCharacter1, testCharacter2}, nil)
 
 	mockedStorage := mocks.NewMockStorage(t)
 	mockedStorage.EXPECT().Characters().Return(mockedCharacterStorable)
