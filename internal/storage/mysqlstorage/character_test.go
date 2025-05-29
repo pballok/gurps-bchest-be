@@ -75,6 +75,8 @@ func TestCharacterStorable_List_Success(t *testing.T) {
 	s := NewCharacterStorable(db)
 
 	campaign := "Campaign1"
-	filtered := s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	filtered, err := s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+
+	assert.NoError(t, err)
 	assert.Equal(t, 0, len(filtered))
 }
