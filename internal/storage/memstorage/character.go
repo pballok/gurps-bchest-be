@@ -50,7 +50,7 @@ func (s *characterStorable) Get(_ context.Context, id storage.CharacterKeyType) 
 	return c, nil
 }
 
-func (s *characterStorable) List(_ context.Context, filters storage.CharacterFilterType) []character.Character {
+func (s *characterStorable) List(_ context.Context, filters storage.CharacterFilterType) ([]character.Character, error) {
 	chars := make([]character.Character, 0)
 	for _, c := range s.characters {
 		if filters.Campaign != nil && *(filters.Campaign) == c.Campaign() {
@@ -58,5 +58,5 @@ func (s *characterStorable) List(_ context.Context, filters storage.CharacterFil
 		}
 	}
 
-	return chars
+	return chars, nil
 }

@@ -65,8 +65,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Character  func(childComplexity int, campaign string, name string) int
-		Characters func(childComplexity int, campaign string) int
+		Character            func(childComplexity int, campaign string, name string) int
+		CharactersByCampaign func(childComplexity int, campaign string) int
 	}
 }
 
@@ -74,7 +74,7 @@ type MutationResolver interface {
 	ImportGCA5Character(ctx context.Context, input model.ImportGCA5CharacterInput) (*model.Character, error)
 }
 type QueryResolver interface {
-	Characters(ctx context.Context, campaign string) ([]*model.Character, error)
+	CharactersByCampaign(ctx context.Context, campaign string) ([]*model.Character, error)
 	Character(ctx context.Context, campaign string, name string) (*model.Character, error)
 }
 
@@ -177,17 +177,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.Character(childComplexity, args["campaign"].(string), args["name"].(string)), true
 
-	case "Query.characters":
-		if e.complexity.Query.Characters == nil {
+	case "Query.charactersByCampaign":
+		if e.complexity.Query.CharactersByCampaign == nil {
 			break
 		}
 
-		args, err := ec.field_Query_characters_args(ctx, rawArgs)
+		args, err := ec.field_Query_charactersByCampaign_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Characters(childComplexity, args["campaign"].(string)), true
+		return e.complexity.Query.CharactersByCampaign(childComplexity, args["campaign"].(string)), true
 
 	}
 	return 0, false
@@ -330,7 +330,7 @@ input ImportGCA5CharacterInput {
 }
 
 type Query {
-  characters(campaign: String!): [Character!]
+  charactersByCampaign(campaign: String!): [Character!]
   character(campaign: String!, name: String!): Character!
 }
 
@@ -432,17 +432,17 @@ func (ec *executionContext) field_Query_character_argsName(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_characters_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Query_charactersByCampaign_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := ec.field_Query_characters_argsCampaign(ctx, rawArgs)
+	arg0, err := ec.field_Query_charactersByCampaign_argsCampaign(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
 	args["campaign"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Query_characters_argsCampaign(
+func (ec *executionContext) field_Query_charactersByCampaign_argsCampaign(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (string, error) {
@@ -982,8 +982,8 @@ func (ec *executionContext) fieldContext_Mutation_importGCA5Character(ctx contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_characters(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_characters(ctx, field)
+func (ec *executionContext) _Query_charactersByCampaign(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_charactersByCampaign(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -996,7 +996,7 @@ func (ec *executionContext) _Query_characters(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Characters(rctx, fc.Args["campaign"].(string))
+		return ec.resolvers.Query().CharactersByCampaign(rctx, fc.Args["campaign"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1010,7 +1010,7 @@ func (ec *executionContext) _Query_characters(ctx context.Context, field graphql
 	return ec.marshalOCharacter2ᚕᚖgithubᚗcomᚋpballokᚋgurpsᚑbchestᚑbeᚋinternalᚋgraphᚋmodelᚐCharacterᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_characters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_charactersByCampaign(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1039,7 +1039,7 @@ func (ec *executionContext) fieldContext_Query_characters(ctx context.Context, f
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_characters_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_charactersByCampaign_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -3413,7 +3413,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "characters":
+		case "charactersByCampaign":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -3422,7 +3422,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_characters(ctx, field)
+				res = ec._Query_charactersByCampaign(ctx, field)
 				return res
 			}
 

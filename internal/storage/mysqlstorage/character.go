@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/pballok/gurps-bchest-be/internal/character"
 	"github.com/pballok/gurps-bchest-be/internal/graph/model"
@@ -56,11 +57,11 @@ func (s *characterStorable) Add(ctx context.Context, chr character.Character) (s
 	}, nil
 }
 
-func (*characterStorable) Update(_ context.Context, id storage.CharacterKeyType, character character.Character) error {
+func (*characterStorable) Update(_ context.Context, _ storage.CharacterKeyType, _ character.Character) error {
 	return nil
 }
 
-func (*characterStorable) Delete(_ context.Context, id storage.CharacterKeyType) error {
+func (*characterStorable) Delete(_ context.Context, _ storage.CharacterKeyType) error {
 	return nil
 }
 
@@ -99,6 +100,52 @@ func (s *characterStorable) Get(ctx context.Context, id storage.CharacterKeyType
 	return c, nil
 }
 
-func (s *characterStorable) List(_ context.Context, filters storage.CharacterFilterType) []character.Character {
-	return []character.Character{}
+func (s *characterStorable) List(ctx context.Context, filters storage.CharacterFilterType) ([]character.Character, error) {
+	query :=
+		"SELECT name, campaign, player, points, st_modif, dx_modif, iq_modif, ht_modif, hp_modif, currhp_modif, will_modif, per_modif, fp_modif, currfp_modif, bs_modif, bm_modif" +
+			" FROM `character`"
+	conditions := make([]string, 0)
+	if filters.Campaign != nil {
+		conditions = append(conditions, "campaign=\""+*filters.Campaign+"\"")
+	}
+
+	if len(conditions) > 0 {
+		query += " WHERE " + strings.Join(conditions, " AND ")
+	}
+
+	rows, err := s.store.QueryContext(ctx, query)
+	if err != nil {
+		return []character.Character{}, err
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
+
+	var name, campaign, player string
+	var points int
+	var stModif, dxModif, iqModif, htModif, hpModif, currHpModif, willModif, perModif, fpModif, currFpModif, bsModif, bmModif float64
+	characters := make([]character.Character, 0)
+	for rows.Next() {
+		err = rows.Scan(&name, &campaign, &player, &points, &stModif, &dxModif, &iqModif, &htModif, &hpModif, &currHpModif, &willModif, &perModif, &fpModif, &currFpModif, &bsModif, &bmModif)
+		if err != nil {
+			return []character.Character{}, err
+		}
+
+		c := character.NewCharacter(name, player, campaign, points)
+		c.Attribute(model.AttributeTypeSt).SetModifier(stModif)
+		c.Attribute(model.AttributeTypeDx).SetModifier(dxModif)
+		c.Attribute(model.AttributeTypeIq).SetModifier(iqModif)
+		c.Attribute(model.AttributeTypeHt).SetModifier(htModif)
+		c.Attribute(model.AttributeTypeHp).SetModifier(hpModif)
+		c.Attribute(model.AttributeTypeCurrHp).SetModifier(currHpModif)
+		c.Attribute(model.AttributeTypeWill).SetModifier(willModif)
+		c.Attribute(model.AttributeTypePer).SetModifier(perModif)
+		c.Attribute(model.AttributeTypeFp).SetModifier(fpModif)
+		c.Attribute(model.AttributeTypeCurrFp).SetModifier(currFpModif)
+		c.Attribute(model.AttributeTypeBs).SetModifier(bsModif)
+		c.Attribute(model.AttributeTypeBm).SetModifier(bmModif)
+		characters = append(characters, c)
+	}
+
+	return characters, nil
 }
