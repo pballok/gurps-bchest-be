@@ -2,9 +2,11 @@ package mysqlstorage
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/pballok/gurps-bchest-be/internal/graph/model"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/pballok/gurps-bchest-be/internal/character"
@@ -70,13 +72,34 @@ func TestCharacterStorable_Get_Success(t *testing.T) {
 }
 
 func TestCharacterStorable_List_Success(t *testing.T) {
-	db, _, _ := sqlmock.New()
+	db, mock, _ := sqlmock.New()
 	defer func() { _ = db.Close() }()
-	s := NewCharacterStorable(db)
 
 	campaign := "Campaign1"
+	columns := []string{"name", "campaign", "player", "points", "st_modif", "dx_modif", "iq_modif", "ht_modif",
+		"hp_modif", "currhp_modif", "will_modif", "per_modif", "fp_modif", "currfp_modif", "bs_modif", "bm_modif"}
+
+	mock.ExpectQuery(
+		"SELECT " + strings.Join(columns, ", ") + " FROM `character`" +
+			" WHERE campaign=\"" + campaign + "\"",
+	).WillReturnRows(sqlmock.NewRows(columns).AddRow(
+		"Test1", campaign, "Player1", 120, 1, 1, 1, 1, 2, -1, 2, 2, 2, -1, 0, 0,
+	).AddRow(
+		"Test2", campaign, "Player2", 120, 2, 2, 2, 2, 3, 0, 3, 3, 3, 0, 0, 0,
+	))
+
+	s := NewCharacterStorable(db)
+
 	filtered, err := s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
 
 	assert.NoError(t, err)
-	assert.Equal(t, 0, len(filtered))
+	assert.Equal(t, 2, len(filtered))
+	assert.Equal(t, "Test1", filtered[0].Name())
+	assert.Equal(t, "Player1", filtered[0].Player())
+	assert.Equal(t, campaign, filtered[0].Campaign())
+	assert.Equal(t, 11.0, filtered[0].Attribute(model.AttributeTypeSt).Value())
+	assert.Equal(t, "Test2", filtered[1].Name())
+	assert.Equal(t, "Player2", filtered[1].Player())
+	assert.Equal(t, campaign, filtered[1].Campaign())
+	assert.Equal(t, 12.0, filtered[1].Attribute(model.AttributeTypeSt).Value())
 }

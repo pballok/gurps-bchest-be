@@ -33,5 +33,4 @@ exclude:
   paths:
     - generated\.go$
     - _gen\.go$
-    - mock_.*\.go$
-    - filesystem\.go$
+    - _mocks\.go$

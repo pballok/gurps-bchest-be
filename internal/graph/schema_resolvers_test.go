@@ -55,9 +55,9 @@ const importData string = `
 }`
 
 type graphqlResponse struct {
-	ImportGCA5Character *model.Character   `json:"importGCA5Character"`
-	Characters          []*model.Character `json:"characters"`
-	Character           *model.Character   `json:"character"`
+	ImportGCA5Character  *model.Character   `json:"importGCA5Character"`
+	CharactersByCampaign []*model.Character `json:"charactersByCampaign"`
+	Character            *model.Character   `json:"character"`
 }
 
 func createTestClient(resolver *Resolver) *client.Client {
@@ -199,7 +199,7 @@ func TestSchemaResolvers_ListCharacters_Success(t *testing.T) {
 	})
 	query := `
       query listCharacters {
-        characters(campaign: "` + testCampaign + `") {
+        charactersByCampaign(campaign: "` + testCampaign + `") {
           campaign,          
           name,
           player,
@@ -211,15 +211,15 @@ func TestSchemaResolvers_ListCharacters_Success(t *testing.T) {
 	err := graphqlClient.Post(query, &response)
 
 	assert.NoError(t, err)
-	assert.Equal(t, 2, len(response.Characters))
-	assert.Equal(t, testCharacterName1, response.Characters[0].Name)
-	assert.Equal(t, testPlayerName1, response.Characters[0].Player)
-	assert.Equal(t, testCampaign, response.Characters[0].Campaign)
-	assert.Equal(t, testPoints, response.Characters[0].AvailablePoints)
-	assert.Equal(t, testCharacterName2, response.Characters[1].Name)
-	assert.Equal(t, testPlayerName2, response.Characters[1].Player)
-	assert.Equal(t, testCampaign, response.Characters[1].Campaign)
-	assert.Equal(t, testPoints, response.Characters[1].AvailablePoints)
+	assert.Equal(t, 2, len(response.CharactersByCampaign))
+	assert.Equal(t, testCharacterName1, response.CharactersByCampaign[0].Name)
+	assert.Equal(t, testPlayerName1, response.CharactersByCampaign[0].Player)
+	assert.Equal(t, testCampaign, response.CharactersByCampaign[0].Campaign)
+	assert.Equal(t, testPoints, response.CharactersByCampaign[0].AvailablePoints)
+	assert.Equal(t, testCharacterName2, response.CharactersByCampaign[1].Name)
+	assert.Equal(t, testPlayerName2, response.CharactersByCampaign[1].Player)
+	assert.Equal(t, testCampaign, response.CharactersByCampaign[1].Campaign)
+	assert.Equal(t, testPoints, response.CharactersByCampaign[1].AvailablePoints)
 }
 
 func TestSchemaResolvers_GetCharacter_Success(t *testing.T) {
