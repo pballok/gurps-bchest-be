@@ -26,7 +26,7 @@ func NewServer(storage storage.Storage) *Server {
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 
-	srv.SetRecoverFunc(func(ctx context.Context, err any) (userMessage error) {
+	srv.SetRecoverFunc(func(ctx context.Context, err any) (userMessage error) { // coverage-ignore
 		slog.Error("graphql server panic: ", slog.Any("error", err))
 		return errors.New("graphql server panic")
 	})

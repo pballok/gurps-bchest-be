@@ -187,7 +187,7 @@ func TestSchemaResolvers_ImportGCA5Character_StorageAddError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestSchemaResolvers_ListCharacters_Success(t *testing.T) {
+func TestSchemaResolvers_CharactersByCampaign_Success(t *testing.T) {
 	mockedCharacterStorable := mocks.NewMockStorable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType](t)
 	mockedCharacterStorable.EXPECT().List(mock.Anything, storage.CharacterFilterType{Campaign: &testCampaign}).Return([]character.Character{testCharacter1, testCharacter2}, nil)
 
@@ -220,6 +220,32 @@ func TestSchemaResolvers_ListCharacters_Success(t *testing.T) {
 	assert.Equal(t, testPlayerName2, response.CharactersByCampaign[1].Player)
 	assert.Equal(t, testCampaign, response.CharactersByCampaign[1].Campaign)
 	assert.Equal(t, testPoints, response.CharactersByCampaign[1].AvailablePoints)
+}
+
+func TestSchemaResolvers_CharactersByCampaign_StorageListError(t *testing.T) {
+	mockedCharacterStorable := mocks.NewMockStorable[storage.CharacterKeyType, character.Character, storage.CharacterFilterType](t)
+	mockedCharacterStorable.EXPECT().List(mock.Anything, storage.CharacterFilterType{Campaign: &testCampaign}).Return(nil, errors.New("uh-oh"))
+
+	mockedStorage := mocks.NewMockStorage(t)
+	mockedStorage.EXPECT().Characters().Return(mockedCharacterStorable)
+
+	graphqlClient := createTestClient(&Resolver{
+		Storage: mockedStorage,
+	})
+	query := `
+      query listCharacters {
+        charactersByCampaign(campaign: "` + testCampaign + `") {
+          campaign,          
+          name,
+          player,
+          availablePoints
+        }
+      }`
+	response := graphqlResponse{}
+
+	err := graphqlClient.Post(query, &response)
+
+	assert.Error(t, err)
 }
 
 func TestSchemaResolvers_GetCharacter_Success(t *testing.T) {

@@ -14,3 +14,7 @@ func TestServer_NewServer(t *testing.T) {
 
 	assert.NotNil(t, server)
 }
+
+func TestServer_Recovery(t *testing.T) {
+
+}

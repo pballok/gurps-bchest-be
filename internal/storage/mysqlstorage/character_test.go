@@ -2,6 +2,7 @@ package mysqlstorage
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 	"testing"
 
@@ -33,9 +34,26 @@ func TestCharacterStorable_Add_Success(t *testing.T) {
 
 	s := NewCharacterStorable(db)
 
-	_, err := s.Add(context.Background(), c)
+	key, err := s.Add(context.Background(), c)
 
 	assert.NoError(t, err)
+	assert.Equal(t, "Test", key.Name)
+	assert.Equal(t, "Campaign", key.Campaign)
+}
+
+func TestCharacterStorable_Add_DBError(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+
+	c := character.NewCharacter("Test", "Player", "Campaign", 100)
+
+	mock.ExpectExec("INSERT INTO `character`").WillReturnError(sql.ErrConnDone)
+
+	s := NewCharacterStorable(db)
+
+	_, err := s.Add(context.Background(), c)
+
+	assert.Error(t, err)
 }
 
 func TestCharacterStorable_Update_Success(t *testing.T) {
