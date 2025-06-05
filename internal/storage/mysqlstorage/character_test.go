@@ -79,11 +79,70 @@ func TestCharacterStorable_Delete_Success(t *testing.T) {
 }
 
 func TestCharacterStorable_Get_Success(t *testing.T) {
-	db, _, _ := sqlmock.New()
+	db, mock, _ := sqlmock.New()
 	defer func() { _ = db.Close() }()
 	s := NewCharacterStorable(db)
 
-	id := storage.CharacterKeyType{Name: "Test", Campaign: "Campaign"}
+	campaign := "Campaign1"
+	name := "Test"
+	columns := []string{"name", "campaign", "player", "points", "st_modif", "dx_modif", "iq_modif", "ht_modif",
+		"hp_modif", "currhp_modif", "will_modif", "per_modif", "fp_modif", "currfp_modif", "bs_modif", "bm_modif"}
+	mock.ExpectQuery(
+		"SELECT "+strings.Join(columns, ", ")+" FROM `character`",
+	).WithArgs(
+		name, campaign,
+	).WillReturnRows(sqlmock.NewRows(columns).AddRow(
+		name, campaign, "Player1", 120, 1, 1, 1, 1, 2, -1, 2, 2, 2, -1, 0, 0,
+	))
+
+	id := storage.CharacterKeyType{Name: name, Campaign: campaign}
+	c, err := s.Get(context.Background(), id)
+
+	assert.NoError(t, err)
+	assert.Equal(t, name, c.Name())
+	assert.Equal(t, campaign, c.Campaign())
+	assert.Equal(t, "Player1", c.Player())
+	assert.Equal(t, 120, c.Points())
+	assert.Equal(t, 11.0, c.Attribute(model.AttributeTypeDx).Value())
+}
+
+func TestCharacterStorable_Get_NotFound(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+	s := NewCharacterStorable(db)
+
+	campaign := "Campaign1"
+	name := "Test"
+	columns := []string{"name", "campaign", "player", "points", "st_modif", "dx_modif", "iq_modif", "ht_modif",
+		"hp_modif", "currhp_modif", "will_modif", "per_modif", "fp_modif", "currfp_modif", "bs_modif", "bm_modif"}
+	mock.ExpectQuery(
+		"SELECT "+strings.Join(columns, ", ")+" FROM `character`",
+	).WithArgs(
+		name, campaign,
+	).WillReturnError(sql.ErrNoRows)
+
+	id := storage.CharacterKeyType{Name: name, Campaign: campaign}
+	_, err := s.Get(context.Background(), id)
+
+	assert.Error(t, err)
+}
+
+func TestCharacterStorable_Get_SqlError(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+	s := NewCharacterStorable(db)
+
+	campaign := "Campaign1"
+	name := "Test"
+	columns := []string{"name", "campaign", "player", "points", "st_modif", "dx_modif", "iq_modif", "ht_modif",
+		"hp_modif", "currhp_modif", "will_modif", "per_modif", "fp_modif", "currfp_modif", "bs_modif", "bm_modif"}
+	mock.ExpectQuery(
+		"SELECT "+strings.Join(columns, ", ")+" FROM `character`",
+	).WithArgs(
+		name, campaign,
+	).WillReturnError(sql.ErrConnDone)
+
+	id := storage.CharacterKeyType{Name: name, Campaign: campaign}
 	_, err := s.Get(context.Background(), id)
 
 	assert.Error(t, err)

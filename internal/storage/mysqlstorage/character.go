@@ -114,6 +114,9 @@ func (s *characterStorable) List(ctx context.Context, filters storage.CharacterF
 	}
 
 	rows, err := s.store.QueryContext(ctx, query)
+	if errors.Is(err, sql.ErrNoRows) {
+		return []character.Character{}, nil
+	}
 	if err != nil {
 		return []character.Character{}, err
 	}
