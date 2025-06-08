@@ -4,9 +4,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/pballok/gurps-bchest-be/internal/memstorage"
 	"github.com/pballok/gurps-bchest-be/internal/server"
-	"github.com/pballok/gurps-bchest-be/internal/storage"
+	"github.com/pballok/gurps-bchest-be/internal/storage/mysqlstorage"
 )
 
 func configureLogger() {
@@ -18,7 +17,18 @@ func configureLogger() {
 func main() {
 	configureLogger()
 
-	gurpsStorage := storage.NewStorage(memstorage.NewCharacterStorable())
+	gurpsDB, err := mysqlstorage.NewDBConnection()
+	if err != nil {
+		panic(err)
+	}
+	defer func() { _ = gurpsDB.Close() }()
+
+	err = mysqlstorage.Migrate(gurpsDB)
+	if err != nil {
+		panic(err)
+	}
+
+	gurpsStorage := mysqlstorage.NewStorage(gurpsDB)
 	gurpsServer := server.NewServer(gurpsStorage)
 
 	gurpsServer.Run()

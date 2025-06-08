@@ -1,0 +1,44 @@
+name: gurps-bchest
+
+services:
+  app:
+    container_name: gurps-bchest-be
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gurps-bchest-be:0.1.0
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./secrets/mysql-creds
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=gurps
+      - MYSQL_DATABASE=gurps
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - gurps-network
+
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    env_file:
+      - ./secrets/mysql-creds
+    environment:
+      - MYSQL_USER=gurps
+      - MYSQL_DATABASE=gurps
+    networks:
+      - gurps-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  gurps-network:
+    driver: bridge

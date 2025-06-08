@@ -3,16 +3,18 @@ package server
 import (
 	"testing"
 
-	"github.com/pballok/gurps-bchest-be/internal/storage"
+	"github.com/pballok/gurps-bchest-be/internal/mocks"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestServer_NewServer(t *testing.T) {
-	mockedStorage := storage.NewMockStorage(t)
-	mockedStorage.EXPECT().ImportData(mock.Anything).Once()
+	mockedStorage := mocks.NewMockStorage(t)
 
 	server := NewServer(mockedStorage)
 
 	assert.NotNil(t, server)
+}
+
+func TestServer_Recovery(t *testing.T) {
+
 }

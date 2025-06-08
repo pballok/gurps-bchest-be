@@ -33,7 +33,7 @@ input ImportGCA5CharacterInput {
 }
 
 type Query {
-  characters(campaign: String!): [Character!]
+  charactersByCampaign(campaign: String!): [Character!]
   character(campaign: String!, name: String!): Character!
 }
 

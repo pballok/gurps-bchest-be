@@ -1,13 +1,16 @@
 package server
 
 import (
+	"context"
+	"errors"
 	"log/slog"
 	"net/http"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/pballok/gurps-bchest-be/internal/character"
+
 	"github.com/pballok/gurps-bchest-be/internal/graph"
 	"github.com/pballok/gurps-bchest-be/internal/storage"
 )
@@ -17,14 +20,18 @@ type Server struct {
 }
 
 func NewServer(storage storage.Storage) *Server {
-	storage.ImportData("./import")
-
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		Storage:           storage,
-		CharacterImporter: character.FromGCA5Import,
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		Storage: storage,
 	}}))
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/playground"))
+	srv.SetRecoverFunc(func(ctx context.Context, err any) (userMessage error) { // coverage-ignore
+		slog.Error("graphql server panic: ", slog.Any("error", err))
+		return errors.New("graphql server panic")
+	})
+
+	http.Handle("/", playground.Handler("GURPS playground", "/playground"))
 	http.Handle("/query", srv)
 
 	return &Server{

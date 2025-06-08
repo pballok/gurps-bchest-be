@@ -24,14 +24,14 @@ coverage: -test
 	go tool cover -html=cover.out -o=cover.html
 
 .PHONY: package
-package: test
+package:
 	@echo "+ $@"
 	docker build --target bin -t $(DOCKER_IMAGE) .
 
 .PHONY: run
 run: package
 	@echo "+ $@"
-	docker run --rm --name $(APP_NAME) -p 8080:8080 $(DOCKER_IMAGE)
+	docker compose up
 
 .PHONY: clear-graphql
 clear-graphql:
@@ -46,9 +46,9 @@ graphql: clear-graphql
 .PHONY: clear-mocks
 clear-mocks:
 	@echo "+ $@"
-	@find . -name "mock_*.go" -type f -delete
+	@rm -rf internal/mocks/*
 
 .PHONY: mocks
 mocks: clear-mocks
 	@echo "+ $@"
-	docker run -v .:/src -w /src vektra/mockery --all
+	docker run --rm -v .://src -w //src vektra/mockery:3
