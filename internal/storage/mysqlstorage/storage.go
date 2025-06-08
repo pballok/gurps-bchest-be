@@ -41,7 +41,7 @@ func NewDBConnection() (*sql.DB, error) { // coverage-ignore
 	return db, nil
 }
 
-func Migrate(db *sql.DB) error {
+func Migrate(db *sql.DB) error { // coverage-ignore
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
 	if err != nil {
 		return fmt.Errorf("failed to create mysql driver: %v", err)

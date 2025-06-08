@@ -180,3 +180,64 @@ func TestCharacterStorable_List_Success(t *testing.T) {
 	assert.Equal(t, campaign, filtered[1].Campaign())
 	assert.Equal(t, 12.0, filtered[1].Attribute(model.AttributeTypeSt).Value())
 }
+
+func TestCharacterStorable_List_NotFound(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+
+	campaign := "Campaign1"
+	columns := []string{"name", "campaign", "player", "points", "st_modif", "dx_modif", "iq_modif", "ht_modif",
+		"hp_modif", "currhp_modif", "will_modif", "per_modif", "fp_modif", "currfp_modif", "bs_modif", "bm_modif"}
+
+	mock.ExpectQuery(
+		"SELECT " + strings.Join(columns, ", ") + " FROM `character`" +
+			" WHERE campaign=\"" + campaign + "\"",
+	).WillReturnError(sql.ErrNoRows)
+
+	s := NewCharacterStorable(db)
+
+	filtered, err := s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(filtered))
+}
+
+func TestCharacterStorable_List_SqlError(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+
+	campaign := "Campaign1"
+	columns := []string{"name", "campaign", "player", "points", "st_modif", "dx_modif", "iq_modif", "ht_modif",
+		"hp_modif", "currhp_modif", "will_modif", "per_modif", "fp_modif", "currfp_modif", "bs_modif", "bm_modif"}
+
+	mock.ExpectQuery(
+		"SELECT " + strings.Join(columns, ", ") + " FROM `character`" +
+			" WHERE campaign=\"" + campaign + "\"",
+	).WillReturnError(sql.ErrConnDone)
+
+	s := NewCharacterStorable(db)
+
+	filtered, err := s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	assert.Error(t, err)
+	assert.Equal(t, 0, len(filtered))
+}
+
+func TestCharacterStorable_List_ScanError(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+	defer func() { _ = db.Close() }()
+
+	campaign := "Campaign1"
+	columns := []string{"name", "campaign", "player", "points", "st_modif", "dx_modif", "iq_modif", "ht_modif",
+		"hp_modif", "currhp_modif", "will_modif", "per_modif", "fp_modif", "currfp_modif", "bs_modif", "bm_modif"}
+	mock.ExpectQuery(
+		"SELECT " + strings.Join(columns, ", ") + " FROM `character`" +
+			" WHERE campaign=\"" + campaign + "\"",
+	).WillReturnRows(sqlmock.NewRows(columns).AddRow(
+		"Test1", campaign, "Player1", 120, "wrong value type", 1, 1, 1, 2, -1, 2, 2, 2, -1, 0, 0,
+	))
+
+	s := NewCharacterStorable(db)
+
+	filtered, err := s.List(context.Background(), storage.CharacterFilterType{Campaign: &campaign})
+	assert.Error(t, err)
+	assert.Equal(t, 0, len(filtered))
+}
